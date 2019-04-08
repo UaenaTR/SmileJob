@@ -1,0 +1,37 @@
+{   
+    "result":"0",
+    "studentList":[
+        {
+            "username":"tr8023",
+            "nickname":"七里香",
+            "password":"smile10.18",
+            "school":"浙江财经大学",
+            "userType":"0",
+            "phoneNum":"15869127754"
+        },
+        {
+            "username":"tr580230",
+            "nickname":"晴天",
+            "password":"Smile1018",
+            "school":"杭州师范大学",
+            "userType":"0",
+            "phoneNum": "15869127754"
+        },
+        {
+          "username": "zufe",
+          "nickname": "浙财",
+          "password": "smile10.18",
+          "school": "浙江财经大学",
+          "userType": "1",
+          "phoneNum": "15869127754"
+        },
+        {
+          "username": "myjf",
+          "nickname": "蚂蚁金服",
+          "password": "smile10.18",
+          "company": "蚂蚁金服",
+          "userType": "2",
+          "phoneNum": "15869127754"
+        }
+    ]
+}
