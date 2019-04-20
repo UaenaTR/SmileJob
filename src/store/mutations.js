@@ -1,3 +1,5 @@
+import { resumeJobList } from "./getters";
+
 //转变
 //在Vuex实例的Mutations下编写对应的修改函数来修改状态。
 //并且要修改的时候，要通过Vuex实例的commit方法来提交修改。
@@ -35,4 +37,8 @@ export const initCurUserResume = (state,curUserResume) => {
 
 export const initCurCompanyJobList = (state,curCompanyJobList) => {
     state.curCompanyJobList = curCompanyJobList
+}
+
+export const initResumeJobList = (state,resumeJobList) => {
+    state.resumeJobList = resumeJobList
 }

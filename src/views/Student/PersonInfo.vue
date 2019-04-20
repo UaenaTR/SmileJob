@@ -111,7 +111,7 @@ export default {
 };
 </script>
 
-<style scope>
+<style scoped>
 #PersonInfo {
   width: 100%;
   background-color: #f2f2f2;

@@ -104,7 +104,7 @@ export default {
 };
 </script>
 
-<style scope>
+<style scoped>
 #CompanyJob {
   display: flex;
 }

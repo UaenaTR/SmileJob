@@ -110,7 +110,7 @@ export default {
 };
 </script>
 
-<style scope>
+<style scoped>
 #CompanyIndex {
   width: 100%;
   background-color: #f2f2f2;

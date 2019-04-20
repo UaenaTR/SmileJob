@@ -36,3 +36,14 @@ export const getCurCompanyJobList = ({commit,state},callback) => {
         callback()
     })
 }
+
+export const getResumeJobList = async ({commit,state}) => {
+    const result = await axios({
+        method:'get',
+        url:'api/resumeJob'
+    })
+    const data = result.data.list
+    if(result.data.result == '0'){
+        commit('initResumeJobList', data)
+    }
+}

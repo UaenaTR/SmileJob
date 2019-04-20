@@ -17,6 +17,7 @@ const state = {
     curUserInfo:{},     //当前用户个人信息
     curUserResume:{},        //当前用户个人简历
     curCompanyJobList:[],     //当前公司已发布岗位列表
+    resumeJobList:[],       //已收到简历岗位列表
 }
  
 // 注册上面引入的各大模块
