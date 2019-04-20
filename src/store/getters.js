@@ -7,3 +7,4 @@ export const userCompany = state => state.userCompany
 export const leftCheckedSchool = state => state.leftCheckedSchool
 export const curPersonInfo = state => state.curUserInfo
 export const curUserResume = state => state.curUserResume
+export const curCompanyJobList = state => state.curCompanyJobList

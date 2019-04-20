@@ -24,3 +24,15 @@ export const getUserResume = ({commit,state}) => {
         commit('initCurUserResume',result)
     })
 }
+
+//获取当前公司已发布岗位的列表
+export const getCurCompanyJobList = ({commit,state},callback) => {
+    axios({
+        method:'get',
+        url: "api/curComJobList"
+    }).then(response => {
+        const result = response.data.list
+        commit('initCurCompanyJobList',result)
+        callback()
+    })
+}

@@ -32,3 +32,7 @@ export const initCurPersonInfo = (state,curPersonInfo) => {
 export const initCurUserResume = (state,curUserResume) => {
     state.curUserResume = curUserResume
 }
+
+export const initCurCompanyJobList = (state,curCompanyJobList) => {
+    state.curCompanyJobList = curCompanyJobList
+}

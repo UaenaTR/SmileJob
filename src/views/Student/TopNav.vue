@@ -59,9 +59,9 @@ export default {
     clickItem(item){
       //点击个人信息
       if(item == 'modifyResume'){
-        this.$router.push('/modifyResume')
+        this.$router.push('/PersonInfo')
       }else if(item == 'mySend'){    //点击修改简历
-        this.$router.push('/mySend')
+        this.$router.push('/ResumeState')
       }else if(item == 'logOut'){     //点击注销账号
         sessionStorage.removeItem('isLogin')    
         this.$router.push('/Login')

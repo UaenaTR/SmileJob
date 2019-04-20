@@ -174,9 +174,11 @@ export default {
 
 .company-info-icon{
   height:45px;
-  margin-right: 100px;
+  margin-right: -100px;
   margin-top:35px;
   line-height: 45px;
+  position: relative;
+  right: -300px;
 }
 
 .company-info-icon span {
