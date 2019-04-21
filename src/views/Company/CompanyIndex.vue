@@ -47,6 +47,7 @@ export default {
   },
   created() {
     this.initNickName()
+    this.initNavType()
   },
   //进入该组件时触发
   beforeRouteEnter(to, from, next) {
@@ -91,6 +92,7 @@ export default {
         default:
           this.checkedIndex = 2;
       }
+      console.log(this.checkedIndex)
     },
     //下拉菜单点击对应显示对应页面
     clickItem(item){
