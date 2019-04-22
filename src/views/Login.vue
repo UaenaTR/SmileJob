@@ -58,7 +58,13 @@
 																this.$store.commit('initSchool',userSchool)
 																this.$router.push('/StudentIndex')
 															}else if(userList[index].userType == '1'){
-																this.$message.error('进入学校页')
+																//将学校登录状态放到缓存中
+																sessionStorage.setItem('isSchoolLogin',true)
+																let userSchool = userList[index].school
+																sessionStorage.setItem('userSchool',userSchool)
+																this.$store.commit('initSchool',userSchool)
+																this.$router.push('/SchoolIndex')
+																// this.$message.error('进入学校页')
 															}else{
 																let userCompany = userList[index].company
 																//将公司登录状态放到缓存中

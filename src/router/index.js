@@ -73,12 +73,31 @@ const router = new Router({
           component: resolve => require(['../views/Company/CompanyInfo.vue'], resolve)
         }
       ]
-    }
+    },
+    {
+      path:'/SchoolIndex',
+      name:'SchoolIndex',
+      redirect:'/SchoolJob',
+      component:resolve => require(['../views/School/SchoolIndex.vue'],resolve),
+      children: [
+        {
+          path: '/SchoolJob',
+          name: '/SchoolJob',
+          component: resolve => require(['../views/School/SchoolJob.vue'], resolve)
+        },
+        {
+          path:'/SchoolInfo',
+          name:'/SchoolInfo',
+          component:resolve => require(['../views/School/SchoolInfo.vue'],resolve)
+        }
+      ]
+    },
   ]
 })
 
 const StudentRoute = ['/OwnSchoolJob', '/PositionDetail', '/ResumeState', '/PersonInfo']
-const CompanyRoute = ['/CompanyIndex']
+const CompanyRoute = ['/CompanyJob','/CompanyResume','/CompanyInfo']
+const SchoolRoute = ['/SchoolJob','SchoolInfo']
 
 router.beforeEach((to, from, next) => {
   if (StudentRoute.indexOf(to.path) != -1) {
@@ -93,7 +112,13 @@ router.beforeEach((to, from, next) => {
     } else {
       next()
     }
-  } else {
+  } else if (SchoolRoute.indexOf(to.path) != -1){
+    if (!sessionStorage.getItem('isSchoolLogin')) {
+      next('/Login')
+    } else {
+      next()
+    }
+  }else{
     next()
   }
 })

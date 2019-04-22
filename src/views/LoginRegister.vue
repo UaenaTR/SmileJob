@@ -26,13 +26,18 @@ export default {
       "/ResumeState",
       "/PersonInfo"
     ]
-    const CompanyRoute = ["/CompanyIndex"]
+    const CompanyRoute = ['/CompanyJob','/CompanyResume','/CompanyInfo']
+    const SchoolRoute = ['/SchoolJob','SchoolInfo']
     if (StudentRoute.indexOf(to.path) != -1) {
       if (!sessionStorage.getItem("isLogin")) {
         loginMsg(this)
       }
     } else if (CompanyRoute.indexOf(to.path) != -1) {
       if (!sessionStorage.getItem("isCompanyLogin")) {
+        loginMsg(this)
+      }
+    }else if(SchoolRoute.indexOf(to.path) != -1){
+       if (!sessionStorage.getItem("isSchoolLogin")) {
         loginMsg(this)
       }
     }
