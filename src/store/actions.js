@@ -36,14 +36,25 @@ export const getCurCompanyJobList = ({commit,state},callback) => {
         callback()
     })
 }
-
+//获取已收到简历岗位列表
 export const getResumeJobList = async ({commit,state}) => {
     const result = await axios({
         method:'get',
         url:'api/resumeJob'
     })
-    const data = result.data.list
     if(result.data.result == '0'){
+        const data = result.data.list
         commit('initResumeJobList', data)
+    }
+}
+//获取学校岗位
+export const getSchoolJobList = async ({commit,state}) => {
+    const result = await axios({
+        method:'get',
+        url:'api/examineJob'
+    })
+    if(result.data.result == '0'){
+        const data = result.data.list
+        commit('initSchoolJobList',data)
     }
 }

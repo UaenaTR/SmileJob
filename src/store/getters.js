@@ -9,3 +9,4 @@ export const curPersonInfo = state => state.curUserInfo
 export const curUserResume = state => state.curUserResume
 export const curCompanyJobList = state => state.curCompanyJobList
 export const resumeJobList = state => state.resumeJobList
+export const schoolJobList = state => state.schoolJobList 

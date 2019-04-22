@@ -42,3 +42,7 @@ export const initCurCompanyJobList = (state,curCompanyJobList) => {
 export const initResumeJobList = (state,resumeJobList) => {
     state.resumeJobList = resumeJobList
 }
+
+export const initSchoolJobList = (state,schoolJobList) => {
+    state.schoolJobList = schoolJobList
+}
