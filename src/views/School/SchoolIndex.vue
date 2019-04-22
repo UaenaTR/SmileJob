@@ -4,7 +4,7 @@
       <span class="logo"></span>
       <ul>
         <li class="school-job" :class="{checkedTop:checkedIndex == 0}" @click='skipNav(0)'>岗位</li>
-        <li class="school-info" :class="{checkedTop:checkedIndex == 1}" @click='skipNav(1)'>信息</li>
+        <li class="school-info" :class="{checkedTop:checkedIndex == 1}" @click='skipNav(1)'>学校信息</li>
       </ul>
       <div class="school-info-icon">
         <el-dropdown @command="clickItem">
