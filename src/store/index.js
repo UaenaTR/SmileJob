@@ -9,16 +9,13 @@ Vue.use(Vuex);
 // 首先声明一个需要全局维护的状态 state
 const state = {
     projectName:'SmileJob', 
-    username:'', //主页显示对应用户名称
-    nickname:'',        //当前用户的昵称
-    userSchool:'',      //当前用户所在学校
-    userCompany:'',     //当前用户所在公司
-    leftCheckedSchool:'',        //左侧导航栏点击选中的学校名称
-    curUserInfo:{},     //当前用户个人信息
+    curUserInfo:{},     //当前用户个人信息,登陆时
     curUserResume:{},        //当前用户个人简历
-    curCompanyJobList:[],     //当前公司已发布岗位列表
+    curCompanyJobList:[],     //当前公司已创建岗位列表
     resumeJobList:[],       //公司已收到简历岗位列表
     schoolJobList:[],       //学校岗位
+    curCompanyInfo:{},       //当前公司信息，修改时
+    schoolList:[],          //学校列表
 }
  
 // 注册上面引入的各大模块

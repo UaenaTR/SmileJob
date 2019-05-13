@@ -23,12 +23,23 @@
         		</span>
         	</div>
         	<!-- 注册信息 -->
-        	<div class="student-school-ipt" v-if="schoolCompanyFlag">
+        	<div class="student-school-ipt" v-if="schoolCompanyFlag == 0">
+        		<span class="student-school-name">您的学校：</span>
+        		<el-select v-model="selectSchool" placeholder="请选择">
+							<el-option
+								v-for="item in options"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value">
+							</el-option>
+						</el-select>
+        	</div>
+					<div class="student-school-ipt" v-if="schoolCompanyFlag == 1">
         		<span class="student-school-name">您的学校：</span>
         		<input type="text" name="" placeholder="请输入您所在的学校" v-model='userSchool'>
         		<span class="school-validate" v-show='schoolValidate'>该项为必填项！</span>
         	</div>
-        	<div class="company-ipt" v-else>
+        	<div class="company-ipt" v-if="schoolCompanyFlag == 2">
         		<span class="company-name">您的企业：</span>
         		<input type="text" name="" placeholder="请输入您所在的企业" v-model='userCompany'>
         		<span class="company-validate" v-show='companyValidate'>该项为必填项！</span>
@@ -59,7 +70,7 @@
         data:function(){
         	return {
         		userType:0,		//切换用户类型，0：学生，1：校方，2：HR
-        		schoolCompanyFlag:true, 	  //切换学校公司
+        		schoolCompanyFlag:0, 	  //切换学校公司
         		userSchool:'',	 //用户所在学校
         		userCompany:'',	 	//用户所在公司
         		username:'',		//用户名
@@ -69,7 +80,18 @@
         		companyValidate:false,		//所在企业验证
         		userValidate:false,		//用户名验证
         		passwordValidate:false,		//密码验证
-        		ensurePasswordValidate:false,		//确认密码验证	
+						ensurePasswordValidate:false,		//确认密码验证
+						selectSchool:null,	//学生选中学校
+						options:[
+							{
+								value:'1',
+								label:'浙江财经大学'
+							},
+							{
+								value:'2',
+								label:'浙江工商大学'
+							}
+						]	
         	}
 				},
 				computed:{
@@ -81,11 +103,7 @@
         	//切换用户类型及学校公司
         	check(clickIndex){
         		this.userType = clickIndex;
-        		if(clickIndex ==2){
-        			this.schoolCompanyFlag = false;
-        		}else{
-        			this.schoolCompanyFlag = true;
-        		}
+        		this.schoolCompanyFlag = clickIndex
         	},
         	//所在学校验证
         	checkSchool(){
@@ -130,7 +148,6 @@
         	},
         	//跳转到注册成功页面
         	goRegisterSuccess(){
-        		this.checkCompany();
         		this.checkUsername();
         		this.checkPassword();
         		this.checkEnsurePassword();
@@ -139,23 +156,60 @@
         			if(!this.userValidate && !this.passwordValidate && !this.ensurePasswordValidate && !this.companyValidate){
 									this.$http({
 										method:'post',
-										url:'/api/register',
-										data:{
-											username:this.username,
+										url:'api/user/regist',
+										params:{
+											userName:this.username,
 											password:this.password,
-											userType:this.userType,
-											userCompany:this.userCompany
+											role:this.userType,
+											ascription:this.userCompany
 										}
 									}).then(response => {
-										console.log(response)
-										this.openRegisterSuccess()
+										if(response.data.code == 200){
+											this.openRegisterSuccess()
+										}else{
+											this.$message.error(response.data.message)
+										}
 									})
 									
         			}
         		}else{
         			this.checkSchool();
         			if(!this.userValidate && !this.passwordValidate && !this.ensurePasswordValidate && !this.schoolValidate){
-        					this.$router.push('/RegisterSuccess');
+        					if(this.userType == 0){
+												this.$http({
+												method:'post',
+												url:'api/user/regist',
+												params:{
+													userName:this.username,
+													password:this.password,
+													role:this.userType,
+													ascription:this.userSchool
+												}
+											}).then(response => {
+												if(response.data.code == 200){
+													this.openRegisterSuccess()
+												}else{
+													this.$message.error(response.data.message)
+												}
+											})
+									}else{
+												this.$http({
+												method:'post',
+												url:'api/user/regist',
+												params:{
+													userName:this.username,
+													password:this.password,
+													role:this.userType,
+													ascription:this.userSchool
+												}
+											}).then(response => {
+												if(response.data.code == 200){
+													this.openRegisterSuccess()
+												}else{
+													this.$message.error(response.data.message)
+												}
+											})
+									}
         			}
         		}
         		
@@ -168,7 +222,7 @@
 							this.password = ''
 							this.ensurePassword = ''
 							this.userCompany = ''
-							this.$router.push('Login')
+							this.$router.push('/Login')
 						}
 					})
 					}

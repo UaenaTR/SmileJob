@@ -1,8 +1,8 @@
 <template>
   <div id="SchoolJob">
     <div class="school-info-cont">
-      <div class="left-nav">
-        <div class="left-nav-title">待审核岗位</div>
+      <!-- <div class="left-nav">
+        <div class="left-nav-title">本校岗位所在公司</div>
         <ul>
           <li
             :class="{'checked':checkedIndex == index}"
@@ -11,23 +11,26 @@
             v-for="(item,index) in schoolJobList"
           >{{ item.company }}</li>
         </ul>
-      </div>
+      </div>-->
       <div class="school-job-detail">
         <!-- 未审核列表 -->
         <div class="noexamine-job-cont">
           <div class="noexamine-job-title">未审核岗位</div>
-          <el-table border :data="noExamineJobDetail" style="700px">
+          <el-table border :data="noExamineJobDetail" style="780px">
             <el-tooltip class="item" effect="dark" placement="top">
               <el-table-column
                 :show-overflow-tooltip="true"
-                prop="jobName"
-                label="岗位名称"
-                width="120"
+                prop="companyName"
+                label="公司名称"
+                width="100"
               ></el-table-column>
             </el-tooltip>
-            <el-table-column prop="jobSalary" label="薪资" width="100"></el-table-column>
-            <el-table-column prop="jobTime" label="发布时间" width="120"></el-table-column>
-            <el-table-column prop="examineSate" label="状态" width="100"></el-table-column>
+            <el-tooltip class="item" effect="dark" placement="top">
+              <el-table-column :show-overflow-tooltip="true" prop="name" label="岗位名称" width="120"></el-table-column>
+            </el-tooltip>
+            <el-table-column prop="salary" label="薪资" width="100"></el-table-column>
+            <el-table-column prop="createTimeStr" label="发布时间" width="120"></el-table-column>
+            <el-table-column prop="status" label="状态" width="80"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <span @click="openExamine('noExamine',0,scope.row)">查看详情</span>
@@ -40,29 +43,39 @@
         <!-- 已审核列表 -->
         <div class="examine-job-cont">
           <div class="examine-job-title">已审核岗位</div>
-          <el-table border :data="examineJobDetail" style="700px">
+          <el-table border :data="examineJobDetail" style="780px">
             <el-tooltip class="item" effect="dark" placement="top">
               <el-table-column
                 :show-overflow-tooltip="true"
-                prop="jobName"
-                label="岗位名称"
-                width="120"
+                prop="companyName"
+                label="公司名称"
+                width="100"
               ></el-table-column>
             </el-tooltip>
-            <el-table-column prop="jobSalary" label="薪资" width="100"></el-table-column>
-            <el-table-column prop="jobTime" label="发布时间" width="120"></el-table-column>
-            <el-table-column prop="examineSate" label="状态" width="100"></el-table-column>
+            <el-tooltip class="item" effect="dark" placement="top">
+              <el-table-column :show-overflow-tooltip="true" prop="name" label="岗位名称" width="120"></el-table-column>
+            </el-tooltip>
+            <el-table-column prop="salary" label="薪资" width="100"></el-table-column>
+            <el-table-column prop="createTimeStr" label="发布时间" width="120"></el-table-column>
+            <el-table-column prop="status" label="状态" width="80"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <span @click="openExamine('examine',0,scope.row)">查看详情</span>
-                <span @click="openExamine('examine',1,scope.row)">通过</span>
-                <span @click="openExamine('examine',2,scope.row)">拒绝</span>
               </template>
             </el-table-column>
           </el-table>
         </div>
       </div>
     </div>
+    <!-- 查看详情弹窗 -->
+    <el-dialog title="岗位详情" :visible.sync="jobDetailDialog" width="50%">
+      <div class="job-detail">
+        <div class="job-description">岗位描述：</div>
+        <div class="description-cont">{{ jobDetailDescription }}</div>
+        <div class="job-request">岗位要求：</div>
+        <div class="request-cont">{{ jobDetailRequest }}</div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -74,44 +87,96 @@ export default {
     return {
       checkedIndex: 0, //左侧导航栏选中
       noExamineJobDetail: [], //选中岗位未审核
-      examineJobDetail: [] //选中已审核岗位
+      examineJobDetail: [], //选中已审核岗位
+      jobDetailDialog:false,
+      jobDetailDescription:'',
+      jobDetailRequest:''
     };
   },
   components: {},
-  computed: {
-    ...mapGetters(["schoolJobList"])
-  },
+  computed: {},
   async created() {
-    await this.getSchoolJobList();
-    this.noExamineJobDetail = this.schoolJobList[0].noExamineJob;
-    this.examineJobDetail = this.schoolJobList[0].examineJob;
-    console.log(this.noExamineJobDetail);
-    console.log(this.examineJobDetail);
+    this.queryNoExmineJob();
+    this.queryExmineJob();
+    // this.noExamineJobDetail = this.schoolJobList[0].noExamineJob;
+    // this.examineJobDetail = this.schoolJobList[0].examineJob;
+    // console.log(this.noExamineJobDetail);
+    // console.log(this.examineJobDetail);
   },
   methods: {
-    ...mapActions(["getSchoolJobList"]),
+    ...mapActions(["getSchoolJobList", "examineJob"]),
+    //查询未审核岗位
+    async queryNoExmineJob() {
+      const params = {
+        id: sessionStorage.getItem("id"),
+        startNum: 0,
+        endNum: 1
+      };
+      const result = await this.getSchoolJobList(params);
+      if (result.data.code == 200) {
+        this.noExamineJobDetail = result.data.body.list;
+      }
+    },
+    //查询已审核岗位
+    async queryExmineJob() {
+      const params = {
+        id: sessionStorage.getItem("id"),
+        startNum: 1,
+        endNum: 3
+      };
+      const result = await this.getSchoolJobList(params);
+      if (result.data.code == 200) {
+        this.examineJobDetail = result.data.body.list;
+      }
+    },
     //左侧导航栏修改选中状态
     switchCheck(item, index) {
       this.noExamineJobDetail = item.noExamineJob;
       this.examineJobDetail = item.examineJob;
       this.checkedIndex = index;
     },
+    //查看详情弹窗
+    lookJobDetail(item){
+      this.jobDetailDialog = true
+      this.jobDetailDescription = item.description
+      this.jobDetailRequest = item.request
+    },
     //打开审核弹窗
     openExamine(examineType, jobType, item) {
-  
+      if (jobType == 0) {
+        this.lookJobDetail(item)
+      }
+      if (examineType == "noExamine") {
+        if (jobType == 1) {
+          this.examineSuccess(1, item);
+        } else if (jobType == 2) {
+          this.examineFail(2, item);
+        }
+      }
     },
     //审核通过
-    examineSuccess() {
+    async examineSuccess(status, item) {
       this.$confirm("确定通过审核?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "审核成功!"
-          });
+        .then(async () => {
+          const params = {
+            id: item.id,
+            status: status
+          };
+          const result = await this.examineJob(params);
+          if (result.data.code == 200) {
+            this.$message({
+              message: result.data.body,
+              type: "success"
+            });
+            this.queryNoExmineJob();
+            this.queryExmineJob();
+          } else {
+            this.$message.error(result.data.message);
+          }
         })
         .catch(() => {
           this.$message({
@@ -121,17 +186,28 @@ export default {
         });
     },
     //审核未通过
-    examineFail() {
+    examineFail(status, item) {
       this.$confirm("确定拒绝审核?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "已拒绝审核!"
-          });
+        .then(async () => {
+          const params = {
+            id: item.id,
+            status: status
+          };
+          const result = await this.examineJob(params);
+          if (result.data.code == 200) {
+            this.$message({
+              message: result.data.body,
+              type: "success"
+            });
+            this.queryNoExmineJob();
+            this.queryExmineJob();
+          } else {
+            this.$message.error(result.data.message);
+          }
         })
         .catch(() => {
           this.$message({
@@ -188,8 +264,12 @@ export default {
 }
 
 .school-job-detail {
-  width: 700px;
+  width: 780px;
   text-align: center;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-left: 200px;
 }
 
 .examine-job-cont {
@@ -219,5 +299,18 @@ export default {
 .el-table span:hover {
   background-color: #fff;
   color: #339966;
+}
+
+.job-description,
+.job-request{
+  margin:20px 30px;
+  font-size: 18px;
+  color: #339966;
+}
+
+.description-cont,
+.request-cont{
+  margin:10px 50px;
+  font-size: 18px;
 }
 </style>

@@ -3,16 +3,15 @@
     <div id="LeftNav">
    			<div class="left-nav">
    				<ul class="left-nav-list">
-   					<li class="own-school" :class="{checked:checkedSchool == userSchool}" @click='getOwnSchool'>本校</li>
-   					<li class="other-school" :class="{checked:item.schoolName == otherSchool}" @click='getOtherSchool(item.schoolName,item.schoolCode)' :key='item.schoolCode' v-for='item in leftSchoolList'>{{ item.schoolName }}</li>
+   					<li :class="{checked:checkIndex == index}" @click='getOther(item.comId,item.comName,index)' :key='index' v-for='(item,index) in leftCompanyList'>{{ item.comName }}</li>
    				</ul>
    			</div>
     </div>
     <div class="main-content">
       <div class="main-own-school">
-        <span>{{ leftCheckedSchool }}职位推荐</span>
+        <span>{{ leftCheckCom }}职位推荐</span>
       </div>
-      <div class="main-own-job" :key="index" v-for="(item,index) in ownSchoolJobInfo">
+      <div class="main-own-job" :key="index" v-for="(item,index) in comJobInfo">
         <div class="own-job-name">
           <span>{{ item.jobName }}</span>
           <span class="own-job-salary">{{ item.jobSalary }}</span>
@@ -21,16 +20,16 @@
           <span class="own-job-city">{{ item.jobCity }}</span>
           <span class="own-job-district">{{ item.jobDistrict }}</span>
           <span class="own-job-time">{{ item.jobTime }}</span>
-          <span class="own-job-more" @click='jobListFlag=true'>查看详情</span>
+          <span class="own-job-more" @click='lookDetail(item.jobDescription,item.jobRequest)'>查看详情</span>
         </div>
       </div>
     </div>
     <!-- 职位详情页 -->
     <el-dialog title="职位详情" :visible.sync="jobListFlag" width="50%" center>
       <span>岗位描述</span>
-	  <div class="job-description">岗位描述</div>
+	  <div class="job-description">{{ lookJobDescription }}</div>
 	  <span>岗位要求</span>
-	  <div class="job-request">岗位要求</div>
+	  <div class="job-request">{{ lookJobRequest }}</div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="jobListFlag = false">返 回</el-button>
         <el-button type="primary">投递简历</el-button>
@@ -48,34 +47,41 @@ export default {
   data: function() {
     return {
       schoolName: "", //根据用户名信息找到的用户对应学校
-      checkedSchool:"",		//左侧导航栏本校选中
-			otherSchool:"",		//其他被选中
-			schoolList:[		//左侧导航栏列表
-				{
-					schoolCode:"zufe",
-					schoolName:"浙江财经大学"
-				},
-				{
-					schoolCode:"hzsf",
-					schoolName:"杭州师范大学"
-				},
-				{
-					schoolCode:"zjgs",
-					schoolName:"浙江工商大学"
-				},
-				{
-					schoolCode:"zjlg",
-					schoolName:"浙江理工大学"
-				},
-				{
-					schoolCode:"zjdx",
-					schoolName:"浙江大学"
-				}
-			],
-			leftSchoolList:[],
-      otherSchoolJobObj:{},
-      ownSchoolJobInfo: [], //学校职位信息
-      jobListFlag:false
+      checkIndex:0,   //左侧导航栏选中索引
+      leftCheckCom:'',    //选中公司名称
+      jobListFlag:false,
+      lookJobDescription:'',    //查看岗位详情描述
+      lookJobRequest:'',        //查看岗位详情要求
+      leftCompanyList:[
+        {
+          comId:1,
+          comName:'蚂蚁金服'
+        },
+        {
+          comId:2,
+          comName:'阿里巴巴集团'
+        }
+      ],
+      comJobInfo:[
+            {
+                'companyId':'1',
+                'company':'蚂蚁金服',
+                'jobName':'销售经理',
+                'jobSalary':'15k~20k',
+                'jobTime':'2019-01-10',
+                'jobDescription':'销售经理岗位描述',
+                'jobRequest':'销售经理岗位要求'
+            },
+            {
+                'companyId':'1',
+                'company':'蚂蚁金服',
+                'jobName':'前端开发工程师',
+                'jobSalary':'20k~25k',
+                'jobTime':'2019-01-13',
+                'jobDescription':'前端开发岗位描述',
+                'jobRequest':'前端开发岗位要求'
+            }
+      ]
     };
   },
   computed: {
@@ -85,12 +91,8 @@ export default {
       'userSchool'
     ])
   },
-  created: function() {
-    //左侧导航栏初始化
-    this.initSchool()
-    this.initLeftNav()
-    //本校默认选中及本校推荐职位
-		this.getOwnSchool()
+  created(){
+    this.initCheck()
   },
   updated(){
     
@@ -99,102 +101,21 @@ export default {
     
   },
   methods: {
-    //刷新页面重新将缓存中的学校信息放到vuex中
-		initSchool(){
-			let userSchool = sessionStorage.getItem('userSchool')
-			this.$store.commit('initSchool',userSchool)
-		},
-		//按照用户学校信息初始化左侧导航栏
-		initLeftNav(){
-			//将左侧导航栏列表中当前用户所在学校渲染位本校，其他学校按详细名渲染
-			this.schoolList.forEach(item => {
-				if(this.userSchool != item.schoolName){
-					this.leftSchoolList.push(item)
-				}
-			})
-		},
-		//本校被选中
-		getOwnSchool(){
-			this.checkedSchool = this.userSchool
-			this.otherSchool = ''
-			//将当前选中的学校名放到缓存中
-			let leftCheckedSchool = this.checkedSchool
-			sessionStorage.setItem('leftCheckedSchool',leftCheckedSchool)
-      this.$store.commit('initLeftCheckedSchool',leftCheckedSchool)
-      //根据当前用户名获取本校推荐职位
-      let username = sessionStorage.getItem("username");
-      this.$http({
-        method: "get",
-        url: "../../../static/api/school_job.json"
-      }).then(response => {
-        if (response.data.result == "0") {
-          let jobListObj = response.data.jobInfo
-          this.$http({
-            method: "get",
-            url: "../../../static/api/student_info.json"
-          }).then(response => {
-            if (response.data.result == "0") {
-              let index = response.data.studentList.findIndex((item, index) => {
-                return username == item.username
-              });
-              this.schoolName = response.data.studentList[index].school
-              let schoolCode = this.formatSchool(this.schoolName)
-              this.ownSchoolJobInfo = jobListObj[schoolCode]
-            }
-          })
-        }
-      })
-			this.$router.push('/OwnSchoolJob')
-		},
-		//其他被选中
-		getOtherSchool(schoolName,schoolCode){
-			this.checkedSchool = ''
-			if(schoolCode == 'zufe'){
-				this.otherSchool = "浙江财经大学"
-			}else if(schoolCode == 'hzsf'){
-				this.otherSchool = "杭州师范大学"
-			}else if(schoolCode == 'zjgs'){
-				this.otherSchool = "浙江工商大学"
-			}else if(schoolCode == 'zjlg'){
-				this.otherSchool = "浙江理工大学"
-			}else {
-				this.otherSchool = "浙江大学"
-			}
-			//将当前选中的学校名放到缓存中
-			let leftCheckedSchool = this.otherSchool
-			sessionStorage.setItem('leftCheckedSchool',leftCheckedSchool)
-      this.$store.commit('initLeftCheckedSchool',leftCheckedSchool)
-      //在vuex中获取左侧导航栏点击的学校状态
-      let leftCheckedSchoolCode = this.formatSchool(leftCheckedSchool)
-      this.$http({
-          method:'get',
-          url:'../../static/api/school_job.json'
-      }).then(response => {
-          if(response.data.result == '0'){
-              this.otherSchoolJobObj = response.data.jobInfo
-          }
-          this.ownSchoolJobInfo = this.otherSchoolJobObj[leftCheckedSchoolCode]
-      })
-			this.$router.push('/OwnSchoolJob')
-		},
-    formatSchool(msg) {
-      switch (msg) {
-        case "浙江财经大学":
-          return "zufe";
-          break;
-        case "杭州师范大学":
-          return "hzsf";
-          break;
-        case "浙江工商大学":
-          return "zjgs";
-          break;
-        case "浙江理工大学":
-          return "zjlg";
-          break;
-        default:
-          return "zjdx";
-      }
-    }
+    initCheck(){
+      this.checkIndex = 0
+      this.leftCheckCom = this.leftCompanyList[this.checkIndex].comName
+    },
+    //导航栏切换
+   getOther(comId,comName,index){
+     this.checkIndex = index
+     this.leftCheckCom = comName
+   },
+   //查看岗位详情
+   lookDetail(jobDescription,jobRequest){
+     this.lookJobDescription = jobDescription
+     this.lookJobRequest = jobRequest
+     this.jobListFlag = true
+   }
   }
 };
 </script>

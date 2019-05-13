@@ -1,69 +1,87 @@
 <template>
   <div id="CompanyJob">
     <div class="left-nav">
-      <div class="left-nav-title">已发布岗位</div>
+      <div class="create-new-job" @click='openCreateDialog'>创建新岗位</div>
+      <!-- 创建新岗位 -->
+      <el-dialog @close='closeCreate' title="创建新岗位" :visible.sync="createNewJobDialog" width="50%">
+      <div class="new-job-name">
+        <span>岗位名称：</span>
+        <input type="text" class="new-job-name-ipt" v-model='addName'>
+      </div>
+      <div class="new-job-salary">
+        <span>岗位薪资：</span>
+        <input type="text" class="new-job-salary-ipt" v-model='addSalary'>
+      </div>
+      <div class="new-job-description">
+        <span>岗位描述：</span>
+        <textarea v-model='addDescription'></textarea>
+      </div>
+      <div class="new-job-request">
+        <span>岗位要求：</span>
+        <textarea v-model='addRequest'></textarea>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeCreate">取 消</el-button>
+        <el-button type="primary" @click="ensureCreate">确 定</el-button>
+      </span>
+    </el-dialog>
+      <div class="left-nav-title">已创建岗位</div>
       <ul>
         <li
           :key="index"
           @click="switchCheck(item,index)"
           :class="{checked:checkIndex==index}"
           v-for="(item,index) in curCompanyJobList"
-        >{{ item.jobName }}</li>
+        >{{ item.name }}</li>
       </ul>
     </div>
     <div class="company-job-cont">
       <div class="company-job-cont-title">
         <span>岗位详情</span>
-        <span class="new-company-job" @click='openNewJob'>发布新岗位</span>
       </div>
       <div class="company-job-cont-detail">
         <span class="company-job-salary">
-          发布薪资：
-          <em>{{ checkJobDetail.jobSalary }}</em>
+          薪资：
+          <em>{{ checkJobDetail.salary }}</em>
         </span>
         <span class="company-job-time">
-          发布时间：
-          <em>{{ checkJobDetail.jobTime }}</em>
+          创建时间：
+          <em>{{ checkJobDetail.createTimeStr }}</em>
         </span>
         <div class="company-job-description">
           <div>岗位描述：</div>
           <div
             class="company-job-description-cont"
-          >{{ checkJobDetail.jobDescription }}哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈</div>
+          >{{ checkJobDetail.description }}</div>
         </div>
         <div class="company-job-description">
           <div>岗位要求：</div>
           <div
             class="company-job-description-cont"
-          >{{ checkJobDetail.jobRequest }}哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈</div>
+          >{{ checkJobDetail.request }}</div>
         </div>
+        <span class="new-company-job" @click='openNewJob'>发布到学校</span>
       </div>
     </div>
     <!-- 发布新岗位弹框 -->
-    <el-dialog title="发布新岗位" :visible.sync="newJobDialog" width="50%">
-      <div class="new-job-name">
-        <span>岗位名称：</span>
-        <input type="text" class="new-job-name-ipt">
-      </div>
-      <div class="new-job-salary">
-        <span>岗位薪资：</span>
-        <input type="text" class="new-job-salary-ipt">
-      </div>
-      <div class="new-job-description">
-        <span>岗位描述：</span>
-        <textarea></textarea>
-      </div>
-      <div class="new-job-request">
-        <span>岗位要求：</span>
-        <textarea></textarea>
-      </div>
+    <el-dialog title="发布到学校" :visible.sync="newJobDialog" width="50%">
       <div class="new-job-school">
+        <div class="current-job">
+          <span class="current-job-cont">{{ currentJob }}</span>
+        </div>
         <span>发布学校：</span>
-        <input type="text" class="new-job-school-ipt">
+         <el-select v-model="checkSchool" placeholder="请选择">
+          <el-option
+            v-for="item in schoolList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="newJobDialog = false">取 消</el-button>
-        <el-button type="primary" @click="newJobDialog = false">确 定</el-button>
+        <el-button type="primary" @click="ensureRelease">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -77,29 +95,112 @@ export default {
     return {
       checkIndex: 0, //左边默认岗位选中
       checkJobDetail: {},    //对应岗位详情
-      newJobDialog:false
+      newJobDialog:false,   //发布新岗位弹窗
+      checkSchool:null,   //发布选中学校
+      currentJob:'',    //当前要发布的岗位
+      createNewJobDialog:false,    //创建新岗位弹窗
+      addName:'',
+      addSalary:'',
+      addDescription:'',
+      addRequest:'',
     };
   },
   components: {},
   computed: {
-    ...mapGetters(["curCompanyJobList"])
+    ...mapGetters(["curCompanyJobList",'schoolList'])
   },
-  created() {
-    this.getCurCompanyJobList(() => {
+  async created() {
+    const params = {
+      companyId:sessionStorage.getItem('id')
+    }
+    await this.getCurCompanyJobList(params)
+    console.log(this.curCompanyJobList)
+    if(this.curCompanyJobList.length > 0){
       this.checkJobDetail = this.curCompanyJobList[0]
-    })
+    }
   },
   methods: {
-    ...mapActions(["getCurCompanyJobList"]),
+    ...mapActions(["getCurCompanyJobList",'getSchoolList','releaseJob']),
     //切换左侧导航栏
     switchCheck(checkJobDetail, checkIndex) {
       this.checkIndex = checkIndex
       this.checkJobDetail = checkJobDetail
     },
-    //打开新岗位弹窗
-    openNewJob(){
+    //打开创建岗位弹窗
+    openCreateDialog(){
+      this.createNewJobDialog = true
+    },
+    //关闭创建弹窗
+    closeCreate(){
+      this.createNewJobDialog = false
+      this.addName = ''
+      this.addSalary = ''
+      this.addDescription = ''
+      this.addRequest = ''
+    },
+    ensureCreate(){
+      const params = {
+        companyId:sessionStorage.getItem('id'),
+        name:this.addName,
+        salary:this.addSalary,
+        description:this.addDescription,
+        request:this.addRequest
+      }
+      this.$http({
+        method:'post',
+        url:'api/company/post/doEdit',
+        params:params
+      }).then(response => {
+        if(response.data.code == 200){
+          this.createNewJobDialog = false
+          this.$message({
+            message:response.data.body,
+            type:'success'
+          })
+          const data = {
+            companyId:sessionStorage.getItem('id')
+          }
+          this.$http({
+            method:'post',
+            url:'api/company/post/query',
+            params:data
+          }).then(response => {
+            const res = response.data.body.list
+            this.$store.commit('initCurCompanyJobList', res)
+          })
+        }else{
+          this.$message.error(response.data.message)
+        }
+      })
+    },
+    //打开发布新岗位弹窗
+    async openNewJob(){
+      this.checkSchool = null
       this.newJobDialog = true
-    }
+      this.currentJob = this.checkJobDetail.name
+      await this.getSchoolList()
+      // console.log(this.checkJobDetail.jobName)
+      console.log(this.checkJobDetail)
+    },
+    //发布新岗位
+    async ensureRelease(){
+      // console.log(this.checkSchool)
+      // console.log(this.checkJobDetail)
+      const params = {
+        schoolId:this.checkSchool,
+        postId:this.checkJobDetail.id
+      }
+      const result = await this.releaseJob(params)
+      if(result.data.code == 200){
+        this.newJobDialog = false
+        this.$message({
+          message:result.data.body,
+          type:'success'
+        })
+      }else{
+        this.$message.error(result.data.message)
+      }
+    },
   }
 };
 </script>
@@ -121,6 +222,24 @@ export default {
   height: 40px;
   font-size: 20px;
   font-weight: bold;
+}
+
+.create-new-job{
+  width: 200px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 20px;
+  color:#fff;
+  background-color: #339966;
+  border-radius: 4px;
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+
+.create-new-job:hover{
+  background-color: #fff;
+  color: #339966;
 }
 
 .left-nav li {
@@ -165,6 +284,7 @@ export default {
   background-color: #339966;
   color: #fff;
   cursor: pointer;
+  margin-top: 50px;
 }
 
 .new-company-job:hover {
@@ -220,4 +340,13 @@ export default {
   height: 50px;
   resize: none;
 }
+
+.current-job{
+  width: 40%;
+  margin-bottom: 50px;
+  font-size: 20px;
+  color: #339966;
+}
+
+
 </style>

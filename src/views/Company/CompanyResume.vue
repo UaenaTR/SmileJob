@@ -80,7 +80,11 @@ export default {
     },
     //简历操作
     operaResume(signType,resumeType,item){
-      
+      if(signType == 'noSign'){
+        if(resumeType == '2'){
+          this.signCommunicate()
+        }
+      }
     },
     //标记为待沟通
     signCommunicate(){

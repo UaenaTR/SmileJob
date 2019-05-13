@@ -7,25 +7,6 @@ import { resumeJobList } from "./getters";
 //并且还得用Vuex实例的commit来提交修改操作，
 //并且由于Mutations函数可以传入参数，所以commit同理也可以传入参数。
 //通过vuex实例的commit方法提交Mutations修改的原因：Vue.js的状态修改其实是在内部有一个修改队列，通过commit的方式提交修改可以保证状态的修改是有序的。
-export const initUsername = (state,localUsername) => {
-    state.username = localUsername
-}
-
-export const initNickname = (state,nickname) => {
-    state.nickname = nickname
-}
-
-export const initSchool = (state,userSchool) => {
-    state.userSchool = userSchool
-}
-
-export const initCompany = (state,userCompany) => {
-    state.userCompany = userCompany
-}
-
-export const initLeftCheckedSchool = (state,leftCheckedSchool) => {
-    state.leftCheckedSchool = leftCheckedSchool
-}
 
 export const initCurPersonInfo = (state,curPersonInfo) => {
     state.curUserInfo = curPersonInfo
@@ -45,4 +26,12 @@ export const initResumeJobList = (state,resumeJobList) => {
 
 export const initSchoolJobList = (state,schoolJobList) => {
     state.schoolJobList = schoolJobList
+}
+
+export const initCurCompanyInfo = (state,curCompanyInfo) => {
+    state.curCompanyInfo = curCompanyInfo
+}
+
+export const initSchoolList = (state,schoolList) => {
+    state.schoolList = schoolList
 }

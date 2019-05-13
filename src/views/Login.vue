@@ -1,5 +1,26 @@
 <template>
         <div id="Login">
+					<!-- 用户类型 -->
+        	<div class="user-type">
+        		<span class="user-student">
+        			<span class="icon1" @click='check(0)'>
+        				<span class="icon2" :class="{iconChecked:userType==0}"></span>
+        			</span>
+        			<span class="user-student-name">学生</span>
+        		</span>
+        		<span class="user-school">
+        			<span class="icon1" @click='check(1)'>
+        				<span class="icon2" :class="{iconChecked:userType==1}"></span>
+        			</span>
+        			<span class="user-school-name">校方</span>
+        		</span>
+        		<span class="user-student">
+        			<span class="icon1" @click='check(2)'>
+        				<span class="icon2" :class="{iconChecked:userType==2}"></span>
+        			</span>
+        			<span class="user-company-name">HR</span>
+        		</span>
+        	</div>
         	<div class="user">
         		<span class="username">账号：</span>
    				<input type="text" class="username-ipt" name="" v-model='loginUser'>
@@ -15,6 +36,8 @@
 </template>
 <script>
 
+			import {mapGetters,mapMutations,mapActions} from 'vuex'
+
       export default {
         name: '',
         data:function(){
@@ -24,65 +47,49 @@
 						userType:'0'
         	}
 				},
+				computed:{
+					...mapGetters(['curPersonInfo'])
+				},
 				methods:{
+					...mapActions(['getPersonInfo']),
+					//切换用户类型及学校公司
+        	check(clickIndex){
+        		this.userType = clickIndex;
+        		this.schoolCompanyFlag = clickIndex
+        	},
 					//登录到主页
-					loginIndex:function(){
+					async loginIndex(){
 						if(this.loginUser != '' && this.loginPassword != ''){
-								this.$http({
-								method:'get',
-								url:'../../static/api/student_info.json',
-							}).then(response => {
-											let userList = response.data.studentList
-											let index = userList.findIndex((item,index) =>{
-													return this.loginUser == item.username
-											})
-											if(index != -1){
-													if(this.loginUser == userList[index].username){
-														if(this.loginPassword == userList[index].password){
-															//将当前用户名放到缓存中
-															sessionStorage.setItem('username',userList[index].username)
-															let localUername = sessionStorage.getItem('username')
-															//将缓存中的用户名放到vuex中
-															this.$store.commit('initUsername',localUername)
-															//将当前用户的昵称放到缓存中和vuex中
-															let nickname = userList[index].nickname
-															sessionStorage.setItem('nickname',nickname)
-															this.$store.commit('initNickname',nickname)
-															//判断用户类型进入到不同的主页面
-															if(userList[index].userType == '0'){
-																//将学生登录状态放到缓存中
-																sessionStorage.setItem('isLogin',true)
-																//将当前用户所在学校名放到缓存中和vuex中
-																let userSchool = userList[index].school
-																sessionStorage.setItem('userSchool',userSchool)
-																this.$store.commit('initSchool',userSchool)
-																this.$router.push('/StudentIndex')
-															}else if(userList[index].userType == '1'){
-																//将学校登录状态放到缓存中
-																sessionStorage.setItem('isSchoolLogin',true)
-																let userSchool = userList[index].school
-																sessionStorage.setItem('userSchool',userSchool)
-																this.$store.commit('initSchool',userSchool)
-																this.$router.push('/SchoolIndex')
-																// this.$message.error('进入学校页')
-															}else{
-																let userCompany = userList[index].company
-																//将公司登录状态放到缓存中
-																sessionStorage.setItem('isCompanyLogin',true)
-																//将当前用户所在公司放到缓存和vuex中
-																sessionStorage.setItem('userCompany',userCompany)
-																this.$store.commit('initCompany',userCompany)
-																this.$router.push('/CompanyIndex')
-																// this.$message.error('进入企业页')
-															}
-													}else{
-														this.$message.error("密码不正确！")
-													}
-												}
-											}else{
-													this.$message.error("账号不正确！")
-												}
-							})
+							const params = {
+								userName:this.loginUser,
+								password:this.loginPassword,
+								role:this.userType
+							}
+							const result = await this.getPersonInfo(params)
+							console.log(result)
+							const curName = this.curPersonInfo.name
+							const id = this.curPersonInfo.id
+							console.log(curName)
+							if(result.data.code == 200){
+									if(this.userType == 0){
+											sessionStorage.setItem('isLogin',true)
+											sessionStorage.setItem('curName',curName)
+											sessionStorage.setItem('id',id)
+											this.$router.push('/StudentIndex')
+									}else if(this.userType == 1){
+											sessionStorage.setItem('isSchoolLogin',true)
+											sessionStorage.setItem('curName',curName)
+											sessionStorage.setItem('id',id)
+											this.$router.push('/SchoolIndex')
+									}else{
+											sessionStorage.setItem('isCompanyLogin',true)
+											sessionStorage.setItem('curName',curName)
+											sessionStorage.setItem('id',id)
+											this.$router.push('/CompanyIndex')
+									}
+							}else{
+								this.$message.error(result.data.messsage)
+							}
 						}else{
 							this.$message.error("请输入用户名和密码！")
 						}
@@ -102,6 +109,48 @@
 		left:50%;
 		top:20px;
 		margin-left: -300px;
+	}
+
+	.user-type{
+		width:600px;
+		position: relative;
+		top:20px;
+		left:50%;
+		margin-left: -310px;
+		text-align: center;
+	}
+
+	.icon1{
+		display: inline-block;
+		width:16px;
+		height:16px;
+		border-radius: 50%;
+		border:1px #fff solid;
+		text-align: center;
+		line-height: 16px;
+		cursor: pointer;
+	}
+
+	.icon2{
+		display: none;
+		width:10px;
+		height:10px;
+		border-radius:50%;
+		border:1px #fff solid;
+		background-color:red;
+		position: relative;
+		top:-3px;
+	}
+
+	.iconChecked{
+		display: inline-block;
+	}
+
+	.user-student,
+	.user-school,
+	.user-company{
+		font-size: 18px;
+		margin-left:30px;
 	}
 	
 	.user,

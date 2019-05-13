@@ -9,7 +9,7 @@
       <div class="school-info-icon">
         <el-dropdown @command="clickItem">
           <span class="el-dropdown-link">
-            {{ nickname }}
+            {{ curName }}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
@@ -31,7 +31,8 @@ import { mapGetters,mapMutations,mapActions } from 'vuex'
 export default {
   data() {
     return {
-      checkedIndex: 0 //顶部导航栏默认选中
+      checkedIndex: 0, //顶部导航栏默认选中
+      curName:''
     };
   },
   components: {},
@@ -46,21 +47,19 @@ export default {
     next();
   },
   computed: {
-      ...mapGetters(['nickname'])
+      ...mapGetters([])
   },
   watch: {
       '$route':'initNavType'
   },
   created() {
       this.initNavType()
-      this.initNickName()
+      this.init()
   },
   methods: {
-      ...mapMutations(['initNickname']),
-      //将信息存进vuex中,供刷新时获取
-      initNickName(){
-          const nickname = sessionStorage.getItem('nickname')
-          this.initNickname(nickname)
+      ...mapMutations(['']),
+      init(){
+        this.curName = sessionStorage.getItem('curName')
       },
       initNavType(){
           const curPath = this.$route.path

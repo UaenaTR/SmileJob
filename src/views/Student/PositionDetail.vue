@@ -1,7 +1,7 @@
 <template>
   <div id="PositionDetail">
     <div class="position-search">
-      <input type="text" placeholder="请搜索职位、公司">
+      <input type="text" placeholder="请搜索职位">
       <label>
         <i class="el-icon-search"></i>
       </label>
@@ -15,7 +15,7 @@
           <span class="position-salary">{{ item.jobSalary }}</span>
         </div>
         <div class="position-detail">
-          <span class="position-city">{{ item.comPany }}</span>
+          <span class="position-city">{{ item.comCity }}</span>
           <span class="position-district">{{ item.comDistrict }}</span>
           <span class="position-time">{{ item.jobTime }}</span>
           <span class="position-send" @click='sendResume'>投递简历</span>
@@ -47,7 +47,7 @@ export default {
   },
   data: function() {
     return {
-      jobListFlag: false,		//岗位详情弹框
+    jobListFlag: false,		//岗位详情弹框
 	  jobList: [],		//职位列表
 	  jobDescription:'',		//职位描述
 	  jobRequest:''		//职位要求
@@ -203,7 +203,7 @@ export default {
 }
 
 .position-time {
-  margin-left: 298px;
+  margin-left: 265px;
 }
 
 .position-send {

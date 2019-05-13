@@ -10,7 +10,7 @@
       <div class="company-info-icon">
         <el-dropdown @command='clickItem'>
           <span class="el-dropdown-link">
-            {{ nickname }}
+            {{ curName }}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
@@ -32,21 +32,21 @@ import { mapGetters,mapMutations,mapActions } from 'vuex'
 export default {
   data() {
     return {
-      checkedIndex: 0 //导航条选中索引
+      checkedIndex: 0, //导航条选中索引
+      curName:'',
     };
   },
   components: {},
   computed:{
     ...mapGetters([
-      'username',
-      'nickname'
+      'username'
       ])
   },
   watch: {
     $route: "initNavType"
   },
   created() {
-    this.initNickName()
+    this.init()
     this.initNavType()
   },
   //进入该组件时触发
@@ -61,10 +61,8 @@ export default {
   },
   methods: {
     ...mapMutations(['initNickname']),
-    //刷新下页面将缓存中的信息存进vuex
-    initNickName(){
-      const nickname = sessionStorage.getItem('nickname')
-      this.initNickname(nickname)
+    init(){
+      this.curName = sessionStorage.getItem('curName')
     },
     //导航栏切换到对应页面
     skipNav(NavType) {

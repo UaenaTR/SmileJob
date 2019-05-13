@@ -3,58 +3,54 @@
     <div class="school-info-cont">
       <div class="school-info-title">学校信息</div>
       <div class="school-info-detail">
-        <div class="school-name">浙江财经大学</div>
+        <div class="school-name">{{ curSchoolInfo.name }}</div>
         <div class="school-address-cont">
-          <span class="school-city">杭州</span>
-          <span class="school-district">江干区</span>
-          <span class="school-detail-add">下沙高教园区学源街18号</span>
+          <span class="school-city">{{ curSchoolInfo.city }}</span>
+          <span class="school-district">{{ curSchoolInfo.district }}</span>
+          <span class="school-detail-add">{{ curSchoolInfo.address }}</span>
         </div>
         <div class="school-introduction">
           <div class="introduction-title">学校介绍</div>
           <div class="introduction-cont">
-            浙江财经大学坐落在浙江省杭州市，是一所由浙江省人民政府举办的，
-            中国高等教育学会创新创业教育分会会员单位，以经济、管理学科为主体，
-            多学科协调发展的全日制普通高等学校，入选第二批浙江省重点建设高校，
-            具有博士、硕士、学士学位授予权和外国留学生、港澳台学生招生权。
-            毕业生薪酬水平位列全国第75位浙江省属高校第一。
+            {{ curSchoolInfo.introduction }}
           </div>
         </div>
         <div @click="openModify" class="modify-school-info">修改信息</div>
         <!-- 修改学校信息弹窗 -->
-        <el-dialog title="修改学校信息" :visible.sync="modifyDialog" width="50%">
+        <el-dialog @close='closeModify' title="修改学校信息" :visible.sync="modifyDialog" width="50%">
           <div class="modify-school-info-cont">
             <div class="modify-school-name-cont">
               <span class="modify-school-name">学校名称：</span>
-              <input type="text" class="school-name-ipt">
+              <input type="text" class="school-name-ipt" v-model='addName'>
             </div>
             <div class="modify-school-nickname-cont">
               <span class="modify-school-nickname">学校简称：</span>
-              <input type="text" class="school-nickname-ipt">
+              <input type="text" class="school-nickname-ipt" v-model='addNickName'>
             </div>
             <div class="modify-school-province-cont">
               <span class="modify-school-province">所在省：</span>
-              <input type="text" class="school-province-ipt">
+              <input type="text" class="school-province-ipt" v-model='addProvince'>
             </div>
             <div class="modify-school-city-cont">
               <span class="modify-school-city">所在市：</span>
-              <input type="text" class="school-city-ipt">
+              <input type="text" class="school-city-ipt" v-model='addCity'>
             </div>
             <div class="modify-school-district-cont">
               <span class="modify-school-district">所在区：</span>
-              <input type="text" class="school-district-ipt">
+              <input type="text" class="school-district-ipt" v-model='addDistrict'>
             </div>
             <div class="modify-school-detailAdd-cont">
               <span class="modify-school-detailAdd">详细地址：</span>
-              <input type="text" class="school-detailAdd-ipt">
+              <input type="text" class="school-detailAdd-ipt" v-model='addAddress'>
             </div>
             <div class="modify-school-introduction-cont">
               <span class="modify-school-introduction">学校介绍：</span>
-              <textarea type="text" class="school-introduction-ipt"></textarea>
+              <textarea type="text" class="school-introduction-ipt" v-model='addIntroduction'></textarea>
             </div>
           </div>
           <span slot="footer" class="dialog-footer">
-            <el-button @click="modifyDialog = false">取 消</el-button>
-            <el-button type="primary" @click="modifyDialog = false">确 定</el-button>
+            <el-button @click="closeModify">取 消</el-button>
+            <el-button type="primary" @click="ensureModify">确 定</el-button>
           </span>
         </el-dialog>
       </div>
@@ -63,19 +59,92 @@
 </template>
 
 <script>
+
+import {mapGetters,mapMutations,mapActions} from 'vuex'
+
 export default {
   data() {
     return {
       modifyDialog:false,   //修改学校信息弹窗
+      curSchoolInfo:{},
+      addName:'',
+      addNickName:'',
+      addProvince:'',
+      addCity:'',
+      addDistrict:'',
+      addAddress:'',
+      addIntroduction:''
     };
   },
   components: {},
-  created() {
-
+  async created() {
+    await this.querySchoolInfo()
   },
   methods: {
+    ...mapActions(['getSchoolInfo','modifySchoolInfo']),
+    //打开修改弹窗
     openModify(){
       this.modifyDialog = true
+      this.querySchoolInfo()
+      this.addName = this.curSchoolInfo.name
+      this.addNickName = this.curSchoolInfo.nickName
+      this.addProvince = this.curSchoolInfo.province
+      this.addCity = this.curSchoolInfo.city
+      this.addDistrict = this.curSchoolInfo.district
+      this.addAddress = this.curSchoolInfo.address
+      this.addIntroduction = this.curSchoolInfo.introduction
+    },
+    //查询学校信息，0未审核 1通过 2拒绝。  查询未审核（0-1） 已审核（1-3）
+    async querySchoolInfo(){
+      const params = {
+        id:sessionStorage.getItem('id')
+      }
+      const result = await this.getSchoolInfo(params)
+      this.curSchoolInfo = result.data.body
+    },
+    //关闭修改弹窗
+    closeModify(){
+      this.modifyDialog = false
+      this.addName = ''
+      this.addNickName = ''
+      this.addProvince = ''
+      this.addCity = ''
+      this.addDistrict = ''
+      this.addAddress = ''
+      this.addIntroduction = ''
+    },
+    //确认修改
+    async ensureModify(){
+      const params = {
+        id:this.curSchoolInfo.id,
+        userName:this.curSchoolInfo.userName,
+        password:this.curSchoolInfo.password,
+        name:this.addName,
+        nickName:this.addNickName,
+        province:this.addProvince,
+        city:this.addCity,
+        district:this.addDistrict,
+        address:this.addAddress,
+        introduction:this.addIntroduction
+      }
+      const result = await this.modifySchoolInfo(params)
+      if(result.data.code == 200){
+        this.$message({
+          message:result.data.body,
+          type:'success'
+        })
+        this.modifyDialog = false
+        this.addName = ''
+        this.addNickName = ''
+        this.addProvince = ''
+        this.addCity = ''
+        this.addDistrict = ''
+        this.addAddress = ''
+        this.addIntroduction = ''
+        this.querySchoolInfo()
+      }else{
+        this.$message.error(result.data.message)
+      }
     }
   }
 };

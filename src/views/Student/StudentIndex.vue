@@ -27,5 +27,6 @@ export default {
   width: 100%;
   background-color: #f2f2f2;
   overflow: hidden;
+  min-height: 500px;
 }
 </style>
