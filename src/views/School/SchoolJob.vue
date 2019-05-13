@@ -130,7 +130,7 @@ export default {
     //查询未审核岗位
     async queryNoExmineJob() {
       const params = {
-        id: sessionStorage.getItem("id"),
+        schoolId: sessionStorage.getItem("id"),
         startNum: 0,
         endNum: 1
       };
@@ -142,7 +142,7 @@ export default {
     //查询已审核岗位
     async queryExmineJob() {
       const params = {
-        id: sessionStorage.getItem("id"),
+        schoolId: sessionStorage.getItem("id"),
         startNum: 1,
         endNum: 3
       };
@@ -185,7 +185,7 @@ export default {
       })
         .then(async () => {
           const params = {
-            id: item.id,
+            id: item.postSchoolId,
             status: status
           };
           const result = await this.examineJob(params);
@@ -216,7 +216,7 @@ export default {
       })
         .then(async () => {
           const params = {
-            id: item.id,
+            id: item.postSchoolId,
             status: status
           };
           const result = await this.examineJob(params);

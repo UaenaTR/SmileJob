@@ -116,3 +116,23 @@ export const examineJob = async ({commit,state},params) => {
     })
     return result
 }
+
+//查询学校已审核岗位
+export const queryStudentJobList = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/company/post/school/student/query',
+        params:params
+    })
+    return result
+}
+
+//查询学校所有岗位并搜索
+export const getAllSchoolJobList = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/company/post/school/query',
+        params:params
+    })
+    return result
+}

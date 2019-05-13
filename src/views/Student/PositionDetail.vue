@@ -1,7 +1,7 @@
 <template>
   <div id="PositionDetail">
     <div class="position-search">
-      <input type="text" placeholder="请搜索职位">
+      <input type="text" placeholder="请搜索职位" v-model='searchJob'>
       <label>
         <i class="el-icon-search"></i>
       </label>
@@ -10,16 +10,16 @@
       <div class="position-title">全部职位</div>
       <div class="position-list-box" :key="index" v-for="(item,index) in jobList">
         <div class="position-name-salary">
-          <span class="position-name">{{ item.jobName }}</span>
-          <span class="position-company">{{ item.company }}</span>
-          <span class="position-salary">{{ item.jobSalary }}</span>
+          <span class="position-name">{{ item.name }}</span>
+          <span class="position-company">{{ item.companyName }}</span>
+          <span class="position-salary">{{ item.salary }}</span>
         </div>
         <div class="position-detail">
-          <span class="position-city">{{ item.comCity }}</span>
-          <span class="position-district">{{ item.comDistrict }}</span>
-          <span class="position-time">{{ item.jobTime }}</span>
+          <span class="position-city">{{ item.city }}</span>
+          <span class="position-district">{{ item.district }}</span>
+          <span class="position-time">{{ item.createTimeStr }}</span>
           <span class="position-send" @click='sendResume'>投递简历</span>
-          <span class="position-more" @click="lookJobDetail(item.jobDescription,item.jobRequest)">查看详情</span>
+          <span class="position-more" @click="lookJobDetail(item.description,item.request)">查看详情</span>
         </div>
       </div>
     </div>
@@ -37,6 +37,9 @@
   </div>
 </template>
 <script>
+
+import {mapGetters,mapMutations,mapActions} from 'vuex'
+
 export default {
   name: "PositionDetail",
   components: {},
@@ -50,22 +53,24 @@ export default {
     jobListFlag: false,		//岗位详情弹框
 	  jobList: [],		//职位列表
 	  jobDescription:'',		//职位描述
-	  jobRequest:''		//职位要求
+    jobRequest:'',		//职位要求
+    searchJob:''    //搜索岗位名
     };
   },
-  created() {
-    this.getJobList()
+  async created() {
+    const params = {
+      studentId:sessionStorage.getItem('id'),
+      postName:this.searchJob,
+      startNum:1,
+      endNum:2
+    }
+    const result = await this.getAllSchoolJobList(params)
+    if(result.data.code == 200){
+      this.jobList = result.data.body.list
+    }
   },
   methods: {
-    //获取岗位列表
-    getJobList() {
-      this.$http({
-        method: "get",
-        url: "/api/JobList"
-      }).then(response => {
-        this.jobList = response.data.jobList
-      })
-    },
+    ...mapActions(['getAllSchoolJobList']),
     lookJobDetail(jobDescription,jobRequest) {
 	  this.jobListFlag = true
 	  this.jobDescription = jobDescription

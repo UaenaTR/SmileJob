@@ -3,7 +3,7 @@
     <div id="LeftNav">
    			<div class="left-nav">
    				<ul class="left-nav-list">
-   					<li :class="{checked:checkIndex == index}" @click='getOther(item.comId,item.comName,index)' :key='index' v-for='(item,index) in leftCompanyList'>{{ item.comName }}</li>
+   					<li :class="{checked:checkIndex == index}" @click='getOther(item,index)' :key='index' v-for='(item,index) in leftCompanyList'>{{ item }}</li>
    				</ul>
    			</div>
     </div>
@@ -13,14 +13,14 @@
       </div>
       <div class="main-own-job" :key="index" v-for="(item,index) in comJobInfo">
         <div class="own-job-name">
-          <span>{{ item.jobName }}</span>
-          <span class="own-job-salary">{{ item.jobSalary }}</span>
+          <span>{{ item.name }}</span>
+          <span class="own-job-salary">{{ item.salary }}</span>
         </div>
         <div class="own-job-details">
-          <span class="own-job-city">{{ item.jobCity }}</span>
-          <span class="own-job-district">{{ item.jobDistrict }}</span>
-          <span class="own-job-time">{{ item.jobTime }}</span>
-          <span class="own-job-more" @click='lookDetail(item.jobDescription,item.jobRequest)'>查看详情</span>
+          <span class="own-job-city">{{ item.city }}</span>
+          <span class="own-job-district">{{ item.district }}</span>
+          <span class="own-job-time">{{ item.createTimeStr }}</span>
+          <span class="own-job-more" @click='lookDetail(item.description,item.request)'>查看详情</span>
         </div>
       </div>
     </div>
@@ -40,7 +40,7 @@
 
 <script>
 
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters,mapActions } from "vuex";
 
 export default {
   name: "OwnSchoolJob",
@@ -52,36 +52,9 @@ export default {
       jobListFlag:false,
       lookJobDescription:'',    //查看岗位详情描述
       lookJobRequest:'',        //查看岗位详情要求
-      leftCompanyList:[
-        {
-          comId:1,
-          comName:'蚂蚁金服'
-        },
-        {
-          comId:2,
-          comName:'阿里巴巴集团'
-        }
-      ],
-      comJobInfo:[
-            {
-                'companyId':'1',
-                'company':'蚂蚁金服',
-                'jobName':'销售经理',
-                'jobSalary':'15k~20k',
-                'jobTime':'2019-01-10',
-                'jobDescription':'销售经理岗位描述',
-                'jobRequest':'销售经理岗位要求'
-            },
-            {
-                'companyId':'1',
-                'company':'蚂蚁金服',
-                'jobName':'前端开发工程师',
-                'jobSalary':'20k~25k',
-                'jobTime':'2019-01-13',
-                'jobDescription':'前端开发岗位描述',
-                'jobRequest':'前端开发岗位要求'
-            }
-      ]
+      leftCompanyList:[],
+      comJobInfo:[],
+      studentJobList:[]
     };
   },
   computed: {
@@ -91,8 +64,21 @@ export default {
       'userSchool'
     ])
   },
-  created(){
+  async created(){
     this.initCheck()
+    const params = {
+      id:sessionStorage.getItem('id'),
+      startNum:1,
+      endNum:2
+    }
+    const result = await this.queryStudentJobList(params)
+    if(result.data.code == 200){
+      this.studentJobList = result.data.body
+      this.leftCompanyList = Object.keys(result.data.body)
+      this.leftCheckCom = this.leftCompanyList[0]
+      this.comJobInfo = result.data.body[this.leftCheckCom]
+    }
+    
   },
   updated(){
     
@@ -101,14 +87,17 @@ export default {
     
   },
   methods: {
+    ...mapActions(['queryStudentJobList']),
     initCheck(){
       this.checkIndex = 0
-      this.leftCheckCom = this.leftCompanyList[this.checkIndex].comName
+      // this.leftCheckCom = this.leftCompanyList[this.checkIndex].comName
     },
     //导航栏切换
-   getOther(comId,comName,index){
+   getOther(item,index){
      this.checkIndex = index
-     this.leftCheckCom = comName
+     this.leftCheckCom = item
+     this.comJobInfo = this.studentJobList[item]
+    //  console.log(item)
    },
    //查看岗位详情
    lookDetail(jobDescription,jobRequest){
