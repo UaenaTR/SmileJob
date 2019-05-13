@@ -66,11 +66,11 @@
 								role:this.userType
 							}
 							const result = await this.getPersonInfo(params)
-							console.log(result)
-							const curName = this.curPersonInfo.name
-							const id = this.curPersonInfo.id
-							console.log(curName)
+							// console.log(result)
+							// console.log(curName)
 							if(result.data.code == 200){
+								const curName = this.curPersonInfo.name
+								const id = this.curPersonInfo.id
 									if(this.userType == 0){
 											sessionStorage.setItem('isLogin',true)
 											sessionStorage.setItem('curName',curName)
@@ -88,7 +88,7 @@
 											this.$router.push('/CompanyIndex')
 									}
 							}else{
-								this.$message.error(result.data.messsage)
+								this.$message.error(result.data.message)
 							}
 						}else{
 							this.$message.error("请输入用户名和密码！")

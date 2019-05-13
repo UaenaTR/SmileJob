@@ -30,7 +30,11 @@
             </el-tooltip>
             <el-table-column prop="salary" label="薪资" width="100"></el-table-column>
             <el-table-column prop="createTimeStr" label="发布时间" width="120"></el-table-column>
-            <el-table-column prop="status" label="状态" width="80"></el-table-column>
+             <el-table-column label="状态" width="80">
+                <template slot-scope='scope'>
+                    {{ scope.row.status | examineStatus }}
+                </template>
+            </el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <span @click="openExamine('noExamine',0,scope.row)">查看详情</span>
@@ -57,7 +61,11 @@
             </el-tooltip>
             <el-table-column prop="salary" label="薪资" width="100"></el-table-column>
             <el-table-column prop="createTimeStr" label="发布时间" width="120"></el-table-column>
-            <el-table-column prop="status" label="状态" width="80"></el-table-column>
+            <el-table-column label="状态" width="80">
+                <template slot-scope='scope'>
+                    {{ scope.row.status | examineStatus }}
+                </template>
+            </el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <span @click="openExamine('examine',0,scope.row)">查看详情</span>
@@ -94,6 +102,20 @@ export default {
     };
   },
   components: {},
+  filters:{
+    examineStatus(data){
+      switch(data){
+        case 0:
+          return '未审核'
+          break
+        case 1:
+          return '审核通过'
+          break
+        default:
+          return '审核未通过'
+      }
+    }
+  },
   computed: {},
   async created() {
     this.queryNoExmineJob();

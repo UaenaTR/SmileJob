@@ -28,9 +28,9 @@
         		<el-select v-model="selectSchool" placeholder="请选择">
 							<el-option
 								v-for="item in options"
-								:key="item.value"
-								:label="item.label"
-								:value="item.value">
+								:key="item.id"
+								:label="item.name"
+								:value="item.id">
 							</el-option>
 						</el-select>
         	</div>
@@ -65,6 +65,9 @@
         </div>
 </template>
 <script>
+
+			import {mapGetters,mapMutations,mapActions} from 'vuex'
+
       export default {
         name: '',
         data:function(){
@@ -82,24 +85,18 @@
         		passwordValidate:false,		//密码验证
 						ensurePasswordValidate:false,		//确认密码验证
 						selectSchool:null,	//学生选中学校
-						options:[
-							{
-								value:'1',
-								label:'浙江财经大学'
-							},
-							{
-								value:'2',
-								label:'浙江工商大学'
-							}
-						]	
+						options:[],		//学校列表	
         	}
 				},
 				computed:{
-					// projectName(){
-					// 	return this.$store.state.projectName;
-					// }
+					...mapGetters(['schoolList'])
+				},
+				async created(){
+					await this.getSchoolList()
+					this.options = this.schoolList
 				},
         methods:{
+					...mapActions(['getSchoolList']),
         	//切换用户类型及学校公司
         	check(clickIndex){
         		this.userType = clickIndex;
@@ -175,7 +172,6 @@
         		}else{
         			this.checkSchool();
         			if(!this.userValidate && !this.passwordValidate && !this.ensurePasswordValidate && !this.schoolValidate){
-        					if(this.userType == 0){
 												this.$http({
 												method:'post',
 												url:'api/user/regist',
@@ -192,7 +188,8 @@
 													this.$message.error(response.data.message)
 												}
 											})
-									}else{
+        			}else if(!this.userValidate && !this.passwordValidate && !this.ensurePasswordValidate && this.selectSchool){
+								console.log(1)
 												this.$http({
 												method:'post',
 												url:'api/user/regist',
@@ -200,7 +197,7 @@
 													userName:this.username,
 													password:this.password,
 													role:this.userType,
-													ascription:this.userSchool
+													ascription:this.selectSchool
 												}
 											}).then(response => {
 												if(response.data.code == 200){
@@ -209,8 +206,8 @@
 													this.$message.error(response.data.message)
 												}
 											})
-									}
-        			}
+									
+							}
         		}
         		
 					},
