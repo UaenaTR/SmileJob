@@ -97,7 +97,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 #PositionDetail {
   width: 100%;
   background-color: #f2f2f2;

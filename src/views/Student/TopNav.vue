@@ -10,7 +10,7 @@
     <div class="user-info">
       <el-dropdown @command='clickItem'>
         <span class="el-dropdown-link">
-          {{ nickname }}<i class="el-icon-arrow-down el-icon--right"></i>
+          {{ curName }}<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command='modifyResume'>在线简历</el-dropdown-item>
@@ -31,12 +31,12 @@ export default {
   data: function() {
     return {
       checkedIndex:0,
+      curName:''
     } 
   },
   computed: {
 	...mapGetters([
-    'username',
-    'nickname'
+    'username'
 	])
   },
   watch:{
@@ -44,17 +44,10 @@ export default {
     "$route":"initNavType"
   },
   created(){
-     this.initNickname2()
      this.initNavType()
+     this.curName = sessionStorage.getItem('curName')
   },
   methods:{
-    ...mapMutations(['initNickname']),
-	  //当刷新页面将用户昵称信息从缓存中重新存进vuex
-	  initNickname2(){
-		  let nickname = sessionStorage.getItem('nickname')
-      // this.$store.commit('initNickname',nickname)
-      this.initNickname(nickname)
-    },
     //顶部导航栏个人操作下拉菜单
     clickItem(item){
       //点击个人信息

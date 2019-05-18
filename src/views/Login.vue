@@ -66,14 +66,15 @@
 								role:this.userType
 							}
 							const result = await this.getPersonInfo(params)
-							// console.log(result)
+							console.log(result)
 							// console.log(curName)
 							if(result.data.code == 200){
 								const curName = this.curPersonInfo.name
 								const id = this.curPersonInfo.id
 									if(this.userType == 0){
 											sessionStorage.setItem('isLogin',true)
-											sessionStorage.setItem('curName',curName)
+											const username = this.curPersonInfo.userName
+											sessionStorage.setItem('curName',username)
 											sessionStorage.setItem('id',id)
 											this.$router.push('/StudentIndex')
 									}else if(this.userType == 1){

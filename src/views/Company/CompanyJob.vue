@@ -35,7 +35,7 @@
         >{{ item.name }}</li>
       </ul>
     </div>
-    <div class="company-job-cont">
+    <div class="company-job-cont" v-if='hasList'>
       <div class="company-job-cont-title">
         <span>岗位详情</span>
       </div>
@@ -63,6 +63,7 @@
         <span class="new-company-job" @click='openNewJob'>发布到学校</span>
       </div>
     </div>
+    <div class="company-job-cont" style="margin:50px auto;font-size:20px;color:#339966;" v-if='!hasList'>您还未创建岗位</div>
     <!-- 发布新岗位弹框 -->
     <el-dialog title="发布到学校" :visible.sync="newJobDialog" width="50%">
       <div class="new-job-school">
@@ -103,6 +104,7 @@ export default {
       addSalary:'',
       addDescription:'',
       addRequest:'',
+      hasList:false
     };
   },
   components: {},
@@ -116,6 +118,7 @@ export default {
     await this.getCurCompanyJobList(params)
     console.log(this.curCompanyJobList)
     if(this.curCompanyJobList.length > 0){
+      this.hasList = true
       this.checkJobDetail = this.curCompanyJobList[0]
     }
   },
@@ -157,6 +160,7 @@ export default {
             message:response.data.body,
             type:'success'
           })
+          this.hasList = true
           const data = {
             companyId:sessionStorage.getItem('id')
           }

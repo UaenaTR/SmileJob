@@ -10,7 +10,7 @@
       <div class="nickname-school-phone">
         <span class="nickname-cont">{{ curPersonInfo.nickname }}</span>
         <span class="schoolname-cont">{{ curPersonInfo.school }}</span>
-        <span class="num-cont">{{ curPersonInfo.phoneNum }}</span>
+        <span class="num-cont">{{ curPersonInfo.tele }}</span>
       </div>
     </div>
     <!-- 在线简历 -->
@@ -18,30 +18,30 @@
       <span class="online-resume">在线简历</span>
       <!-- 基本信息 -->
       <div class="resume-basic-info">
-        <span class="nickname">{{ curUserResume.nickname }}</span>
-        <span class="sex">{{ curUserResume.sex }}</span>
-        <span class="age">{{ curUserResume.age }}</span>
-        <span class="education">{{ curUserResume.education }}</span>
-        <span class="phone">{{ curUserResume.phone }}</span>
-        <span class="email">{{ curUserResume.email }}</span>
+        <span class="nickname">{{ curPersonInfo.realName }}</span>
+        <span class="sex">{{ curPersonInfo.sex }}</span>
+        <span class="age">{{ curPersonInfo.age }}</span>
+        <span class="education">{{ curPersonInfo.education }}</span>
+        <span class="phone">{{ curPersonInfo.tele }}</span>
+        <span class="email">{{ curPersonInfo.email }}</span>
       </div>
       <!-- 教育背景 -->
       <div class="education-bg-cont">
         <div class="education-bg">教育背景</div>
         <div class="bg-cont">
-          <span class="education-bg-time">{{ curUserResume.educationTime }}</span>
-          <span class="education-bg-school">{{ curUserResume.educationSchool }}</span>
-          <span class="education-bg-profession">{{ curUserResume.educationProfession }}</span>
+          <span class="education-bg-time">{{ curPersonInfo.educationTime }}</span>
+          <span class="education-bg-school">{{ curPersonInfo.school }}</span>
+          <span class="education-bg-profession">{{ curPersonInfo.profession }}</span>
         </div>
       </div>
       <!-- 求职意向 -->
       <div class="bidding-cont">
         <div class="bidding">求职意向</div>
         <div class="job-cont">
-          <span class="job-name">{{ curUserResume.jobName }}</span>
-          <span class="job-address">{{ curUserResume.jobAddress }}</span>
-          <span class="job-arrive">{{ curUserResume.jobArrive }}</span>
-          <span class="job-salary">{{ curUserResume.jobSalary }}</span>
+          <span class="job-name">{{ curPersonInfo.postName }}</span>
+          <span class="job-address">{{ curPersonInfo.address }}</span>
+          <span class="job-arrive">{{ curPersonInfo.postArrive }}</span>
+          <span class="job-salary">{{ curPersonInfo.postSalary }}</span>
         </div>
       </div>
       <!-- 项目经验 -->
@@ -49,17 +49,17 @@
         <div class="item-exp">项目经验</div>
         <div>
           <div class="item-title">
-            <span class="item-time">{{ curUserResume.itemTime }}</span>
-            <span class="item-name">{{ curUserResume.itemName }}</span>
+            <span class="item-time">{{ curPersonInfo.itemTime }}</span>
+            <span class="item-name">{{ curPersonInfo.itemName }}</span>
           </div>
           <div class="item-detail">
             <div class="item-description">
               <span class="description">项目描述</span>
-              <span class="description-cont">{{ curUserResume.itemDescription }}</span>
+              <span class="description-cont">{{ curPersonInfo.itemDescription }}</span>
             </div>
             <div class="item-duty">
               <span class="duty">个人职责</span>
-              <span class="duty-cont">{{ curUserResume.itemDuty }}</span>
+              <span class="duty-cont">{{ curPersonInfo.itemDuty }}</span>
             </div>
           </div>
           <div class="del-btn">
@@ -72,11 +72,11 @@
       <div class="practice-cont">
         <div class="practice-exp">实习经历</div>
         <div class="bg-cont">
-          <span class="education-bg-time">{{ curUserResume.practiceTime }}</span>
-          <span class="education-bg-school">{{ curUserResume.practiceCom }}</span>
-          <span class="education-bg-profession">{{ curUserResume.practicePosition }}</span>
+          <span class="education-bg-time">{{ curPersonInfo.practiceTime }}</span>
+          <span class="education-bg-school">{{ curPersonInfo.practiceCom }}</span>
+          <span class="education-bg-profession">{{ curPersonInfo.practicePosition }}</span>
         </div>
-        <div class="practice-detail">{{ curUserResume.practiceDetailCont }}</div>
+        <div class="practice-detail">{{ curPersonInfo.practiceDetailCont }}</div>
         <div class="del-btn">
           <span>编辑该条</span>
           <span>删除该条</span>
@@ -86,10 +86,10 @@
       <div class="item-cont">
         <div class="item-exp">在校经历</div>
         <div class="item-title">
-          <span class="item-time">{{ curUserResume.schoolTime }}</span>
-          <span class="item-name">{{ curUserResume.schoolItemName }}</span>
+          <span class="item-time">{{ curPersonInfo.schoolTime }}</span>
+          <span class="item-name">{{ curPersonInfo.schoolItemName }}</span>
         </div>
-        <div class="school-exp-cont">{{ curUserResume.schoolExpCont }}</div>
+        <div class="school-exp-cont">{{ curPersonInfo.schoolExpCont }}</div>
         <div class="del-btn">
           <span>编辑该条</span>
           <span>删除该条</span>
@@ -98,7 +98,7 @@
       <!-- 荣誉奖项 -->
       <div class="item-cont">
         <div class="item-exp">自我评价</div>
-        <div class="school-exp-cont">{{ curUserResume.personalEvaluation }}</div>
+        <div class="school-exp-cont">{{ curPersonInfo.personalEvaluction }}</div>
       </div>
     </div>
     <!-- 修改信息弹窗 -->
@@ -227,6 +227,34 @@ export default {
       isSchoolExp:true,   //担任职务输入框
       checkSex:null,  //选中性别
       checkExp:null,  //选中经历类型
+      curPersonInfo:{
+        nickname:'测试昵称',
+        realName:'陶然',
+        school:'浙江财经大学',
+        sex:'男',
+        age:'23',
+        education:'本科',
+        tele:'15812345678',
+        email:'tr580230@163.com',
+        educationTime:'2015.19-2019.6',
+        profession:'电子商务',
+        postName:'前端开发工程师',
+        address:'浙江杭州',
+        postArrive:'一周内到岗',
+        postSalary:'111',
+        personalEvaluction:'自我评价',
+        itemTime:'2018.12-2019.6',
+        itemName:'项目名称',
+        itemDescription:'项目描述',
+        itemDuty:'项目职责',
+        practiceTime:'2018.12-2019.6',
+        practiceCom:'彩讯科技',
+        practicePosition:'前端开发',
+        practiceDetailCont:'实习描述',
+        schoolTime:'2018.6-2018.7',
+        schoolItemName:'前端开发暑期实践',
+        schoolExpCont:'经历内容'
+      },
       sexList:[
         {
           sexFlag:true,
@@ -255,19 +283,13 @@ export default {
   },
   components: {},
   computed: {
-    ...mapGetters(["curPersonInfo", "curUserResume"])
+    
   },
   created() {
-    this.initPersonInfo();
-    this.getUserResume();
+
   },
   methods: {
-    ...mapActions(["getPersonInfo", "getUserResume"]), //获取登录人的个人信息
     //初始化个人信息
-    initPersonInfo() {
-      const username = sessionStorage.getItem("username");
-      this.getPersonInfo(username);
-    },
     //打开修改个人信息弹窗
     openModifyDialog(){
       this.personInfoFlag = true
