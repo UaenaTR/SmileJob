@@ -16,7 +16,7 @@
         <!-- 未审核列表 -->
         <div class="noexamine-job-cont">
           <div class="noexamine-job-title">未审核岗位</div>
-          <el-table border :data="noExamineJobDetail" style="780px">
+          <el-table border :data="noExamineJobDetail" style="height:320px;">
             <el-tooltip class="item" effect="dark" placement="top">
               <el-table-column
                 :show-overflow-tooltip="true"
@@ -43,11 +43,19 @@
               </template>
             </el-table-column>
           </el-table>
+          <!-- 分页 -->
+          <el-pagination
+            @current-change="noexamineSkipPage"
+            :current-page="noexamineCurPage"
+            :page-size="4"
+            layout="prev, pager, next"
+            :total="noexamineTotal"
+          ></el-pagination>
         </div>
         <!-- 已审核列表 -->
         <div class="examine-job-cont">
           <div class="examine-job-title">已审核岗位</div>
-          <el-table border :data="examineJobDetail" style="780px">
+          <el-table border :data="examineJobDetail" style="height:320px;">
             <el-tooltip class="item" effect="dark" placement="top">
               <el-table-column
                 :show-overflow-tooltip="true"
@@ -72,6 +80,14 @@
               </template>
             </el-table-column>
           </el-table>
+          <!-- 分页 -->
+          <el-pagination
+            @current-change="examineSkipPage"
+            :current-page="examineCurPage"
+            :page-size="4"
+            layout="prev, pager, next"
+            :total="examineTotal"
+          ></el-pagination>
         </div>
       </div>
     </div>
@@ -98,7 +114,12 @@ export default {
       examineJobDetail: [], //选中已审核岗位
       jobDetailDialog:false,
       jobDetailDescription:'',
-      jobDetailRequest:''
+      jobDetailRequest:'',
+      examineCurPage:1,
+      noexamineCurPage:1,
+      pageSize:4,
+      examineTotal:null,
+      noexamineTotal:null
     };
   },
   components: {},
@@ -131,25 +152,39 @@ export default {
     async queryNoExmineJob() {
       const params = {
         schoolId: sessionStorage.getItem("id"),
+        pageNum:this.noexamineCurPage,
+        pageSize:4,
         startNum: 0,
         endNum: 1
       };
       const result = await this.getSchoolJobList(params);
       if (result.data.code == 200) {
         this.noExamineJobDetail = result.data.body.list;
+        this.noexamineTotal = result.data.body.total
       }
+    },
+    noexamineSkipPage(curPage){
+      this.noexamineCurPage = curPage
+      this.queryNoExmineJob()
     },
     //查询已审核岗位
     async queryExmineJob() {
       const params = {
         schoolId: sessionStorage.getItem("id"),
+        pageNum:this.examineCurPage,
+        pageSize:4,
         startNum: 1,
         endNum: 3
       };
       const result = await this.getSchoolJobList(params);
       if (result.data.code == 200) {
         this.examineJobDetail = result.data.body.list;
+        this.examineTotal = result.data.body.total
       }
+    },
+    examineSkipPage(curPage){
+      this.examineCurPage = curPage
+      this.queryExmineJob() 
     },
     //左侧导航栏修改选中状态
     switchCheck(item, index) {

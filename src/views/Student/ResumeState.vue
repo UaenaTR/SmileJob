@@ -3,10 +3,13 @@
     <div class="resume-state">
      <div class="left-nav">
        <ul>
-         <li :class="{checked:checkIndex == index}" :key='index' @click='getOther(item,index)' v-for='(item,index) in sendJobList'>{{ item.company }}——{{ item.jobName }}</li>
+         <li :class="{checked:checkIndex == index}" :key='index' @click='getOther(item,index)' v-for='(item,index) in sendJobList'>{{ item.companyName }}——{{ item.postName }}</li>
        </ul>
      </div>
-     <div class="main-content">
+     <div class="main-content" v-if='!hasSend'>
+       <div class="noSendInfo">您还未投递简历</div>
+     </div>
+     <div class="main-content" v-if='hasSend'>
       <div class="resume-sign-text" v-if='activeResumeStatus != 0'>您的简历已经被标记为{{ activeResumeStatus | resumeStatusToText }}</div>
       <div class="resume-sign-text" v-if='activeResumeStatus == 0'>您的简历{{ activeResumeStatus | resumeStatusToText }}</div>
       <div class="resume-step">
@@ -27,24 +30,16 @@
 </template>
 
 <script>
+
+import {mapGetters,mapActions,mapMutations} from 'vuex'
+
 export default {
   data() {
     return {
       checkIndex:0,   //左侧导航选中索引
       activeResumeStatus:0,    //简历当前状态
-      activeStatus:0,
-      sendJobList:[
-        {
-          company:'蚂蚁金服',
-          jobName:'销售经理',
-          status:3      //0待查看 1待沟通  2面试  3不合适
-        },
-        {
-          company:'蚂蚁金服',
-          jobName:'前端开发工程师',
-          status:0
-        }
-      ]
+      sendJobList:[],
+      hasSend:false,    //是否有投递
     }
   },
   components: {
@@ -68,14 +63,32 @@ export default {
       }
     }
   },
-  created(){
+  async created(){
+    await this.queryResumeState()
     this.initNav()
   },
   methods:{
+    ...mapActions(['querySendInfo']),
     initNav(){
       this.checkIndex = 0
-      this.activeResumeStatus = this.sendJobList[this.checkIndex].status
-      console.log(this.checkIndex)
+      if(this.sendJobList.length > 0){
+        this.hasSend = true
+        this.activeResumeStatus = this.sendJobList[this.checkIndex].status
+        console.log(this.checkIndex)
+      }else{
+        this.hasSend = false
+      }
+    },
+    //查询简历状态
+    async queryResumeState(){
+      const params = {
+        studentId:sessionStorage.getItem('id'),
+      }
+      const result = await this.querySendInfo(params)
+      if(result.data.code == 200){
+        this.sendJobList = result.data.body.list
+      }
+
     },
     //切换导航栏
     getOther(item,index){
@@ -146,6 +159,15 @@ export default {
   text-align: center;
   margin-top: 20px;
   font-size: 18px;
+}
+
+.noSendInfo{
+  font-size: 20px;
+  text-align: center;
+  color: #339966;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 </style>

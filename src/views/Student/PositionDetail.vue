@@ -2,11 +2,11 @@
   <div id="PositionDetail">
     <div class="position-search">
       <input type="text" placeholder="请搜索职位" v-model='searchJob'>
-      <label>
+      <label @click='searchJobList'>
         <i class="el-icon-search"></i>
       </label>
     </div>
-    <div class="position-list">
+    <div class="position-list" style="position:relative;height:450px;">
       <div class="position-title">全部职位</div>
       <div class="position-list-box" :key="index" v-for="(item,index) in jobList">
         <div class="position-name-salary">
@@ -18,10 +18,19 @@
           <span class="position-city">{{ item.city }}</span>
           <span class="position-district">{{ item.district }}</span>
           <span class="position-time">{{ item.createTimeStr }}</span>
-          <span class="position-send" @click='sendResume'>投递简历</span>
+          <span class="position-send" @click='send(item)'>投递简历</span>
           <span class="position-more" @click="lookJobDetail(item.description,item.request)">查看详情</span>
         </div>
       </div>
+      <!-- 分页 -->
+          <el-pagination
+            style="position:absolute;left:50%;transform: translateX(-50%);bottom:0px;"
+            @current-change="skipPage"
+            :current-page="jobCurPage"
+            :page-size="3"
+            layout="prev, pager, next"
+            :total="total"
+          ></el-pagination>
     </div>
     <!-- 职位详情页 -->
     <el-dialog title="职位详情" :visible.sync="jobListFlag" width="50%" center>
@@ -54,39 +63,67 @@ export default {
 	  jobList: [],		//职位列表
 	  jobDescription:'',		//职位描述
     jobRequest:'',		//职位要求
-    searchJob:''    //搜索岗位名
+    searchJob:'',    //搜索岗位名
+    jobCurPage:1,
+    total:null
     };
   },
   async created() {
-    const params = {
-      studentId:sessionStorage.getItem('id'),
-      postName:this.searchJob,
-      startNum:1,
-      endNum:2
-    }
-    const result = await this.getAllSchoolJobList(params)
-    if(result.data.code == 200){
-      this.jobList = result.data.body.list
-    }
+    await this.getJobList()
   },
   methods: {
-    ...mapActions(['getAllSchoolJobList']),
+    ...mapActions(['getAllSchoolJobList','sendResume']),
+    //获取本校岗位列表
+    async getJobList(){
+      const params = {
+        studentId:sessionStorage.getItem('id'),
+        postName:this.searchJob,
+        pageNum:this.jobCurPage,
+        pageSize:3,
+        startNum:1,
+        endNum:2
+      }
+      const result = await this.getAllSchoolJobList(params)
+      if(result.data.code == 200){
+        this.jobList = result.data.body.list
+        this.total = result.data.body.total
+      }
+    },
+    //搜索
+    searchJobList(){
+      this.jobCurPage = 1
+      this.getJobList()
+    },
+    skipPage(curPage){
+      this.jobCurPage = curPage
+      this.getJobList()
+    },
     lookJobDetail(jobDescription,jobRequest) {
 	  this.jobListFlag = true
 	  this.jobDescription = jobDescription
 	  this.jobRequest = jobRequest
     },
     //投递简历
-    sendResume(){
+    send(item){
+      console.log(item)
       this.$confirm('确定投递此岗位?', '投递', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
+        }).then(async () => {
+         const params = {
+           studentId:sessionStorage.getItem('id'),
+           postId:item.id
+         }
+        const result = await this.sendResume(params)
+        if(result.data.code == 200){
           this.$message({
-            type: 'success',
-            message: '投递成功!'
-          });
+            message:result.data.body,
+            type:'success'
+          })
+        }else{
+          this.$message.error(result.data.message)
+        }
         }).catch(() => {
           this.$message({
             type: 'info',

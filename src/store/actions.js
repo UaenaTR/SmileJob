@@ -12,17 +12,6 @@ export const getPersonInfo = async ({commit,state},params) =>{
     return result
 }
 
-//获取当前用户个人简历
-export const getUserResume = ({commit,state}) => {
-    axios({
-        method:'get',
-        url:"api/resume"
-    }).then(response => {
-        const result = response.data
-        commit('initCurUserResume',result)
-    })
-}
-
 //获取当前公司已常见岗位的列表
 export const getCurCompanyJobList = async ({commit,state},params) => {
     const result = await axios({
@@ -32,18 +21,29 @@ export const getCurCompanyJobList = async ({commit,state},params) => {
     })
     const data = result.data.body.list
     commit('initCurCompanyJobList', data)
+    return result
 }
-//获取已收到简历岗位列表
-export const getResumeJobList = async ({commit,state}) => {
+
+//获取投递信息
+export const querySendInfo = async ({commit,state},params) => {
     const result = await axios({
-        method:'get',
-        url:'api/resumeJob'
+        method:'post',
+        url:'api/company/post/student/query',
+        params:params
     })
-    if(result.data.result == '0'){
-        const data = result.data.list
-        commit('initResumeJobList', data)
-    }
+    return result
 }
+
+//删除岗位
+export const delJob = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/company/post/del',
+        params:params
+    })
+    return result
+}
+
 //获取学校岗位
 export const getSchoolJobList = async ({commit,state},params) => {
     const result = await axios({
@@ -135,4 +135,84 @@ export const getAllSchoolJobList = async ({commit,state},params) => {
         params:params
     })
     return result
+}
+
+//查询学生信息
+export const getStudentInfo = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/student/edit',
+        params:params
+    })
+    return result
+}
+
+//修改学生信息
+export const modifyStudentInfo = async ({ commit, state }, params) => {
+    const result = await axios({
+        method: 'post',
+        url: 'api/student/doEdit',
+        params: params
+    })
+    return result
+}
+
+//添加经历
+export const addStudentExp = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/student/exp/doEdit',
+        params:params
+    })
+    return result
+}
+
+//查询经历
+export const queryxStudentExp = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/student/exp/edit',
+        params:params
+    })
+    return result 
+}
+
+//查询经历列表
+export const queryTypeExp = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/student/exp/query',
+        params:params
+    })
+    return result
+}
+
+//删除经历
+export const delExp = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/student/exp/del',
+        params:params
+    })
+    return result
+}
+
+//投递简历
+export const sendResume = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/company/post/commit',
+        params:params
+    })
+    return result
+}
+
+//标记简历
+export const signJobResume = async ({commit,state},params) => {
+    const result = await axios({
+        method:'post',
+        url:'api/company/post/student/handle',
+        params:params
+    })
+    return result 
 }
