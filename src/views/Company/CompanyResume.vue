@@ -550,7 +550,7 @@ export default {
 
 .nickname-school-phone,
 .resume-basic-info {
-  width: 40%;
+  width: 50%;
   margin: 20px auto;
   text-align: center;
 }

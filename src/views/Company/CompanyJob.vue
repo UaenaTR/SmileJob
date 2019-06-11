@@ -124,7 +124,16 @@ export default {
     // };
     // await this.getCurCompanyJobList(params);
     // console.log(this.curCompanyJobList);
-    await this.skipPage();
+    this.jobListCurPage = 1;
+      const params = {
+        companyId: sessionStorage.getItem("id"),
+        pageNum: this.jobListCurPage,
+        pageSize: 4
+      };
+      const result = await this.getCurCompanyJobList(params);
+      if (result.data.code == 200) {
+        this.total = result.data.body.total;
+      }
     if (this.curCompanyJobList.length > 0) {
       this.hasList = true;
       this.checkIndex = 0;
@@ -188,7 +197,9 @@ export default {
           });
           this.hasList = true;
           const data = {
-            companyId: sessionStorage.getItem("id")
+            companyId: sessionStorage.getItem("id"),
+            pageSize:4,
+            pageNum:this.jobListCurPage
           };
           this.$http({
             method: "post",
@@ -196,11 +207,13 @@ export default {
             params: data
           }).then(response => {
             const res = response.data.body.list;
+            this.total = response.data.body.total;
             this.$store.commit("initCurCompanyJobList", res);
             if (this.curCompanyJobList.length > 0) {
               this.hasList = true;
-              this.checkIndex = 0;
-              this.checkJobDetail = this.curCompanyJobList[0];
+              // this.checkIndex = 0;
+              // this.checkJobDetail = this.curCompanyJobList[0];
+              // this.jobListCurPage = 1
             }
           });
         } else {
@@ -248,7 +261,8 @@ export default {
           type: "success"
         });
         const data = {
-          companyId: sessionStorage.getItem("id")
+          companyId: sessionStorage.getItem("id"),
+          pageNum:1
         };
         this.$http({
           method: "post",
@@ -256,11 +270,13 @@ export default {
           params: data
         }).then(response => {
           const res = response.data.body.list;
+          this.total = response.data.body.total;
           this.$store.commit("initCurCompanyJobList", res);
           if (this.curCompanyJobList.length > 0) {
           this.hasList = true;
-          this.checkIndex = 0;
-          this.checkJobDetail = this.curCompanyJobList[0];
+          // this.checkIndex = 0;
+          // this.checkJobDetail = this.curCompanyJobList[0];
+         
         }else{
           console.log(this.curCompanyJobList)
           this.hasList = false

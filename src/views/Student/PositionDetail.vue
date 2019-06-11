@@ -35,13 +35,9 @@
     <!-- 职位详情页 -->
     <el-dialog title="职位详情" :visible.sync="jobListFlag" width="50%" center>
       <span>岗位描述</span>
-	  <div class="job-description">{{ jobDescription }}</div>
+	  <div style="margin-bottom:30px;" class="job-description">{{ jobDescription }}</div>
 	  <span>岗位要求</span>
 	  <div class="job-request">{{ jobRequest }}</div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="jobListFlag = false">返 回</el-button>
-        <el-button type="primary">确 定</el-button>
-      </span>
     </el-dialog>
   </div>
 </template>
@@ -79,7 +75,7 @@ export default {
         studentId:sessionStorage.getItem('id'),
         postName:this.searchJob,
         pageNum:this.jobCurPage,
-        pageSize:3,
+        pageSize:4,
         startNum:1,
         endNum:2
       }

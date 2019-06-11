@@ -20,7 +20,7 @@
           <span class="own-job-city">{{ item.city }}</span>
           <span class="own-job-district">{{ item.district }}</span>
           <span class="own-job-time">{{ item.createTimeStr }}</span>
-          <span class="own-job-more" @click='lookDetail(item.description,item.request)'>查看详情</span>
+          <span class="own-job-more" @click='lookDetail(item.id,item.description,item.request)'>查看详情</span>
         </div>
       </div>
     </div>
@@ -32,7 +32,7 @@
 	  <div class="job-request">{{ lookJobRequest }}</div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="jobListFlag = false">返 回</el-button>
-        <el-button type="primary">投递简历</el-button>
+        <el-button type="primary" @click='send'>投递简历</el-button>
       </span>
     </el-dialog>
   </div>
@@ -54,7 +54,8 @@ export default {
       lookJobRequest:'',        //查看岗位详情要求
       leftCompanyList:[],
       comJobInfo:[],
-      studentJobList:[]
+      studentJobList:[],
+      sendJobId:'',   //投递岗位id
     };
   },
   computed: {
@@ -87,7 +88,7 @@ export default {
     
   },
   methods: {
-    ...mapActions(['queryStudentJobList']),
+    ...mapActions(['queryStudentJobList','sendResume']),
     initCheck(){
       this.checkIndex = 0
       // this.leftCheckCom = this.leftCompanyList[this.checkIndex].comName
@@ -100,11 +101,41 @@ export default {
     //  console.log(item)
    },
    //查看岗位详情
-   lookDetail(jobDescription,jobRequest){
+   lookDetail(id,jobDescription,jobRequest){
      this.lookJobDescription = jobDescription
      this.lookJobRequest = jobRequest
      this.jobListFlag = true
-   }
+     this.sendJobId = id
+   },
+   //投递简历
+    send(){
+      this.$confirm('确定投递此岗位?', '投递', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+         const params = {
+           studentId:sessionStorage.getItem('id'),
+           postId:this.sendJobId
+         }
+        const result = await this.sendResume(params)
+        if(result.data.code == 200){
+          this.$message({
+            message:result.data.body,
+            type:'success'
+          })
+          this.jobListFlag = false
+        }else{
+          this.$message.error(result.data.message)
+          this.jobListFlag = false
+        }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消投递'
+          });          
+        });
+    }
   }
 };
 </script>
